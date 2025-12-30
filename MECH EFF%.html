@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Shop Efficiency Tracker</title>
     <style>
-        /* ===== CSS VARIABLES ===== */
         :root {
             --bg-dark: #1a1d23;
             --bg-card: #22262e;
@@ -32,7 +31,6 @@
             --bronze: #cd7c32;
         }
 
-        /* ===== RESET & BASE ===== */
         *, *::before, *::after {
             box-sizing: border-box;
             margin: 0;
@@ -51,7 +49,6 @@
             line-height: 1.5;
         }
 
-        /* ===== LAYOUT ===== */
         .app-container {
             max-width: 1400px;
             margin: 0 auto;
@@ -69,22 +66,40 @@
             gap: 16px;
         }
 
-        .header h1 {
-            font-size: 1.5rem;
-            font-weight: 600;
-            letter-spacing: -0.02em;
+        .header-left {
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             gap: 12px;
         }
 
-        .header h1::before {
+        .header-left::before {
             content: '';
             display: block;
             width: 8px;
             height: 32px;
             background: var(--accent-blue);
             border-radius: 2px;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .header-title-group {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+        }
+
+        .creator-credit {
+            font-size: 0.65rem;
+            color: #ef4444;
+            font-weight: 400;
+            letter-spacing: 0.05em;
         }
 
         .header-right {
@@ -104,7 +119,6 @@
             border: 1px solid var(--border-color);
         }
 
-        /* ===== BUTTONS ===== */
         .btn {
             background: transparent;
             border: 1px solid var(--border-color);
@@ -131,7 +145,27 @@
             background: var(--status-red-bg);
         }
 
-        /* ===== MAIN TABS ===== */
+        .instagram-btn {
+            background: linear-gradient(45deg, #f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%);
+            border: none;
+            color: white;
+            padding: 10px 18px;
+            border-radius: var(--radius);
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .instagram-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(188, 24, 136, 0.4);
+        }
+
         .main-tabs {
             display: flex;
             gap: 4px;
@@ -203,7 +237,6 @@
             background: rgba(59, 130, 246, 0.1);
         }
 
-        /* ===== TAB CONTENT ===== */
         .tab-panel {
             display: none;
         }
@@ -212,7 +245,6 @@
             display: block;
         }
 
-        /* ===== MECHANIC TAB LAYOUT ===== */
         .mechanic-layout {
             display: grid;
             grid-template-columns: 380px 1fr;
@@ -225,7 +257,6 @@
             }
         }
 
-        /* ===== ENTRY PANEL ===== */
         .entry-panel {
             background: var(--bg-card);
             border-radius: var(--radius);
@@ -275,7 +306,8 @@
         }
 
         .form-group select,
-        .form-group input {
+        .form-group input,
+        .form-group textarea {
             width: 100%;
             padding: 12px 14px;
             background: var(--bg-input);
@@ -287,8 +319,16 @@
             transition: border-color 0.15s, box-shadow 0.15s;
         }
 
+        .form-group textarea {
+            resize: vertical;
+            min-height: 120px;
+            font-family: var(--font-mono);
+            font-size: 0.875rem;
+        }
+
         .form-group select:focus,
-        .form-group input:focus {
+        .form-group input:focus,
+        .form-group textarea:focus {
             outline: none;
             border-color: var(--accent-blue);
             box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
@@ -311,7 +351,6 @@
             margin-top: 4px;
         }
 
-        /* ===== CALENDAR PICKER ===== */
         .calendar-picker {
             position: relative;
         }
@@ -450,7 +489,6 @@
             color: var(--accent-blue);
         }
 
-        /* ===== RESULT DISPLAY ===== */
         .result-display {
             margin-top: 24px;
             padding: 20px;
@@ -511,7 +549,6 @@
             margin-top: 12px;
         }
 
-        /* ===== SAVE BUTTON ===== */
         .save-btn {
             width: 100%;
             padding: 14px;
@@ -537,7 +574,6 @@
             cursor: not-allowed;
         }
 
-        /* ===== DATA PANEL ===== */
         .data-panel {
             background: var(--bg-card);
             border-radius: var(--radius);
@@ -545,7 +581,6 @@
             padding: 24px;
         }
 
-        /* ===== STATS ROW ===== */
         .stats-row {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -584,7 +619,6 @@
         .stat-value.yellow { color: var(--status-yellow); }
         .stat-value.red { color: var(--status-red); }
 
-        /* ===== CHART CONTAINER ===== */
         .chart-section {
             margin-bottom: 24px;
         }
@@ -644,7 +678,6 @@
             height: 100%;
         }
 
-        /* ===== INSIGHTS SECTION ===== */
         .insights-section {
             margin-top: 24px;
         }
@@ -654,6 +687,30 @@
             font-weight: 600;
             color: var(--text-secondary);
             margin-bottom: 12px;
+        }
+
+        .insights-scroll-container {
+            max-height: 240px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+
+        .insights-scroll-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .insights-scroll-container::-webkit-scrollbar-track {
+            background: var(--bg-input);
+            border-radius: 3px;
+        }
+
+        .insights-scroll-container::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 3px;
+        }
+
+        .insights-scroll-container::-webkit-scrollbar-thumb:hover {
+            background: var(--text-muted);
         }
 
         .insight-item {
@@ -703,9 +760,32 @@
             opacity: 0.5;
         }
 
-        /* ===== HISTORY TABLE ===== */
         .history-section {
             margin-top: 24px;
+        }
+
+        .history-scroll-container {
+            max-height: 400px;
+            overflow-y: auto;
+            border-radius: var(--radius);
+        }
+
+        .history-scroll-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .history-scroll-container::-webkit-scrollbar-track {
+            background: var(--bg-input);
+            border-radius: 4px;
+        }
+
+        .history-scroll-container::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 4px;
+        }
+
+        .history-scroll-container::-webkit-scrollbar-thumb:hover {
+            background: var(--text-muted);
         }
 
         .history-table {
@@ -726,6 +806,10 @@
             color: var(--text-muted);
             text-transform: uppercase;
             letter-spacing: 0.05em;
+            position: sticky;
+            top: 0;
+            background: var(--bg-card);
+            z-index: 1;
         }
 
         .history-table td {
@@ -737,7 +821,7 @@
             background: var(--bg-hover);
         }
 
-        .entry-delete-btn {
+        .entry-delete-btn, .entry-edit-btn {
             background: var(--status-red-bg);
             border: 1px solid var(--status-red);
             color: var(--status-red);
@@ -747,6 +831,13 @@
             font-size: 0.75rem;
             font-weight: 500;
             transition: all 0.15s;
+            margin-right: 4px;
+        }
+
+        .entry-edit-btn {
+            background: rgba(59, 130, 246, 0.15);
+            border-color: var(--accent-blue);
+            color: var(--accent-blue);
         }
 
         .entry-delete-btn:hover {
@@ -754,7 +845,11 @@
             color: white;
         }
 
-        /* ===== OVERVIEW GRID ===== */
+        .entry-edit-btn:hover {
+            background: var(--accent-blue);
+            color: white;
+        }
+
         .overview-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -801,7 +896,6 @@
             font-weight: 600;
         }
 
-        /* ===== RANK BADGES ===== */
         .rank-badge {
             display: inline-flex;
             align-items: center;
@@ -893,7 +987,6 @@
             margin-top: 4px;
         }
 
-        /* ===== SHOP AVERAGE CARD ===== */
         .shop-avg-card {
             background: var(--bg-card);
             border-radius: var(--radius);
@@ -920,7 +1013,6 @@
             font-weight: 700;
         }
 
-        /* ===== MODAL ===== */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -951,6 +1043,8 @@
             border: 1px solid var(--border-color);
             transform: translateY(20px);
             transition: transform 0.2s;
+            max-height: 90vh;
+            overflow-y: auto;
         }
 
         .modal-overlay.visible .modal {
@@ -982,7 +1076,6 @@
             color: var(--text-primary);
         }
 
-        /* ===== COLOR PICKER ===== */
         .color-options {
             display: flex;
             gap: 8px;
@@ -1008,7 +1101,6 @@
             box-shadow: 0 0 0 2px var(--bg-dark);
         }
 
-        /* ===== PIN INPUT ===== */
         .pin-input-group {
             display: flex;
             gap: 8px;
@@ -1046,7 +1138,6 @@
             display: block;
         }
 
-        /* ===== TOAST NOTIFICATION ===== */
         .toast {
             position: fixed;
             bottom: 24px;
@@ -1068,7 +1159,6 @@
             opacity: 1;
         }
 
-        /* ===== DELETE MECHANIC SECTION ===== */
         .danger-zone {
             margin-top: 24px;
             padding-top: 24px;
@@ -1081,30 +1171,154 @@
             color: var(--status-red);
             margin-bottom: 12px;
         }
+
+        .chart-tooltip {
+            position: absolute;
+            background: var(--bg-card);
+            border: 1px solid var(--accent-blue);
+            border-radius: var(--radius);
+            padding: 8px 12px;
+            font-size: 0.75rem;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.15s;
+            z-index: 1000;
+            box-shadow: var(--shadow);
+        }
+
+        .chart-tooltip.visible {
+            opacity: 1;
+        }
+
+        .tooltip-label {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .tooltip-value {
+            font-family: var(--font-mono);
+            font-size: 0.875rem;
+            color: var(--accent-blue);
+        }
+
+        .reports-grid {
+            display: grid;
+            gap: 24px;
+        }
+
+        .month-card {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            border: 1px solid var(--border-color);
+            padding: 24px;
+        }
+
+        .month-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .month-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .month-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .leaderboard-section {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            border: 1px solid var(--border-color);
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .leaderboard-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        .leaderboard-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .leaderboard-table th,
+        .leaderboard-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .leaderboard-table th {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .leaderboard-table td {
+            font-size: 0.875rem;
+        }
+
+        .streak-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        .streak-indicator.above {
+            background: var(--status-green-bg);
+            color: var(--status-green);
+        }
+
+        .streak-indicator.below {
+            background: var(--status-red-bg);
+            color: var(--status-red);
+        }
     </style>
 </head>
 <body>
     <div class="app-container">
-        <!-- HEADER -->
         <header class="header">
-            <h1>Shop Efficiency Tracker</h1>
+            <div class="header-left">
+                <div class="header-title-group">
+                    <h1>Shop Efficiency Tracker</h1>
+                    <div class="creator-credit">CREATED BY ERICK PEARCE</div>
+                </div>
+            </div>
             <div class="header-right">
                 <div class="formula-display">
                     Efficiency = (Labor ÷ Hours) ÷ $<span id="rateDisplay">150</span> × 100
                 </div>
                 <button class="btn" onclick="openSettings()">⚙ Settings</button>
-                <button class="btn" onclick="exportData()">Export JSON</button>
             </div>
         </header>
 
-        <!-- MAIN TABS -->
         <div class="main-tabs" id="mainTabs">
             <button class="main-tab active" data-tab="overview">Overview</button>
+            <button class="main-tab" data-tab="reports">Reports</button>
         </div>
 
-        <!-- TAB PANELS -->
         <div id="tabPanels">
             <div class="tab-panel active" data-panel="overview" id="overviewPanel"></div>
+            <div class="tab-panel" data-panel="reports" id="reportsPanel"></div>
         </div>
     </div>
 
@@ -1125,6 +1339,31 @@
                 <input type="number" id="targetEfficiency" value="50" min="1" max="200">
             </div>
             <button class="save-btn" onclick="saveSettingsAndClose()">Save Settings</button>
+            
+            <div style="margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--border-color);">
+                <div style="display: flex; gap: 12px; margin-bottom: 12px;">
+                    <button class="btn" style="flex: 1;" onclick="exportData()">📤 Export JSON</button>
+                    <button class="btn" style="flex: 1;" onclick="openImportModal()">📥 Import JSON</button>
+                </div>
+                <a href="https://www.instagram.com/erick.pearce/" target="_blank" class="instagram-btn" style="width: 100%; justify-content: center;">
+                    📸 Follow on Instagram
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- IMPORT JSON MODAL -->
+    <div class="modal-overlay" id="importModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">Import JSON Data</h3>
+                <button class="modal-close" onclick="closeImportModal()">×</button>
+            </div>
+            <div class="form-group">
+                <label for="importData">Paste JSON data below:</label>
+                <textarea id="importData" placeholder='{"entries": [...], "mechanics": [...], "settings": {...}}'></textarea>
+            </div>
+            <button class="save-btn" onclick="importData()">Import Data</button>
         </div>
     </div>
 
@@ -1147,7 +1386,7 @@
         </div>
     </div>
 
-    <!-- DELETE CONFIRM MODAL WITH PIN -->
+    <!-- DELETE MECHANIC MODAL WITH PIN -->
     <div class="modal-overlay" id="deleteConfirmModal">
         <div class="modal">
             <div class="modal-header">
@@ -1175,31 +1414,104 @@
         </div>
     </div>
 
-    <!-- DELETE ENTRY MODAL -->
+    <!-- SAVE ENTRY MODAL WITH PIN -->
+    <div class="modal-overlay" id="saveEntryModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">Save Entry</h3>
+                <button class="modal-close" onclick="closeSaveEntry()">×</button>
+            </div>
+            <p style="color: var(--text-secondary); margin-bottom: 12px;">
+                Save efficiency entry for <strong id="saveMechanicName"></strong>?
+            </p>
+            <p style="color: var(--text-muted); font-size: 0.875rem; margin-bottom: 16px;">
+                Enter PIN to confirm:
+            </p>
+            <div class="pin-input-group">
+                <input type="password" class="pin-digit" maxlength="1" data-pin-save="0" oninput="handleSavePinInput(this, 0)" onkeydown="handleSavePinKeydown(event, 0)">
+                <input type="password" class="pin-digit" maxlength="1" data-pin-save="1" oninput="handleSavePinInput(this, 1)" onkeydown="handleSavePinKeydown(event, 1)">
+                <input type="password" class="pin-digit" maxlength="1" data-pin-save="2" oninput="handleSavePinInput(this, 2)" onkeydown="handleSavePinKeydown(event, 2)">
+                <input type="password" class="pin-digit" maxlength="1" data-pin-save="3" oninput="handleSavePinInput(this, 3)" onkeydown="handleSavePinKeydown(event, 3)">
+            </div>
+            <div class="pin-error" id="pinSaveError">Incorrect PIN. Please try again.</div>
+            <div style="display: flex; gap: 12px; margin-top: 20px;">
+                <button class="btn" style="flex: 1;" onclick="closeSaveEntry()">Cancel</button>
+                <button class="btn btn-danger" style="flex: 1; background: var(--accent-blue); color: white;" onclick="confirmSaveEntry()">Save Entry</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- DELETE ENTRY MODAL WITH PIN -->
     <div class="modal-overlay" id="deleteEntryModal">
         <div class="modal">
             <div class="modal-header">
                 <h3 class="modal-title">Delete Entry</h3>
                 <button class="modal-close" onclick="closeDeleteEntry()">×</button>
             </div>
-            <p style="color: var(--text-secondary); margin-bottom: 20px;">
+            <p style="color: var(--text-secondary); margin-bottom: 12px;">
                 Are you sure you want to delete this entry for <strong id="deleteEntryWeek"></strong>?
-                This action cannot be undone.
             </p>
-            <div style="display: flex; gap: 12px;">
+            <p style="color: var(--text-muted); font-size: 0.875rem; margin-bottom: 16px;">
+                Enter PIN to confirm deletion:
+            </p>
+            <div class="pin-input-group">
+                <input type="password" class="pin-digit" maxlength="1" data-pin-delete="0" oninput="handleDeletePinInput(this, 0)" onkeydown="handleDeletePinKeydown(event, 0)">
+                <input type="password" class="pin-digit" maxlength="1" data-pin-delete="1" oninput="handleDeletePinInput(this, 1)" onkeydown="handleDeletePinKeydown(event, 1)">
+                <input type="password" class="pin-digit" maxlength="1" data-pin-delete="2" oninput="handleDeletePinInput(this, 2)" onkeydown="handleDeletePinKeydown(event, 2)">
+                <input type="password" class="pin-digit" maxlength="1" data-pin-delete="3" oninput="handleDeletePinInput(this, 3)" onkeydown="handleDeletePinKeydown(event, 3)">
+            </div>
+            <div class="pin-error" id="pinDeleteError">Incorrect PIN. Please try again.</div>
+            <div style="display: flex; gap: 12px; margin-top: 20px;">
                 <button class="btn" style="flex: 1;" onclick="closeDeleteEntry()">Cancel</button>
                 <button class="btn btn-danger" style="flex: 1;" onclick="confirmDeleteEntry()">Delete Entry</button>
             </div>
         </div>
     </div>
 
-    <!-- TOAST -->
-    <div class="toast" id="toast">Entry saved successfully</div>
+    <!-- EDIT ENTRY MODAL WITH PIN -->
+    <div class="modal-overlay" id="editEntryModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">Edit Entry</h3>
+                <button class="modal-close" onclick="closeEditEntry()">×</button>
+            </div>
+            <div class="form-group">
+                <label>Week</label>
+                <input type="text" id="editEntryWeek" readonly style="background: var(--bg-hover); cursor: not-allowed;">
+            </div>
+            <div class="input-row">
+                <div class="form-group">
+                    <label>Hours Worked</label>
+                    <input type="number" id="editEntryHours" min="0" max="100" step="0.5">
+                </div>
+                <div class="form-group">
+                    <label>Labor Generated ($)</label>
+                    <input type="number" id="editEntryLabor" min="0" step="1">
+                </div>
+            </div>
+            <p style="color: var(--text-muted); font-size: 0.875rem; margin-bottom: 16px;">
+                Enter PIN to confirm changes:
+            </p>
+            <div class="pin-input-group">
+                <input type="password" class="pin-digit" maxlength="1" data-pin-edit="0" oninput="handleEditPinInput(this, 0)" onkeydown="handleEditPinKeydown(event, 0)">
+                <input type="password" class="pin-digit" maxlength="1" data-pin-edit="1" oninput="handleEditPinInput(this, 1)" onkeydown="handleEditPinKeydown(event, 1)">
+                <input type="password" class="pin-digit" maxlength="1" data-pin-edit="2" oninput="handleEditPinInput(this, 2)" onkeydown="handleEditPinKeydown(event, 2)">
+                <input type="password" class="pin-digit" maxlength="1" data-pin-edit="3" oninput="handleEditPinInput(this, 3)" onkeydown="handleEditPinKeydown(event, 3)">
+            </div>
+            <div class="pin-error" id="pinEditError">Incorrect PIN. Please try again.</div>
+            <div style="display: flex; gap: 12px; margin-top: 20px;">
+                <button class="btn" style="flex: 1;" onclick="closeEditEntry()">Cancel</button>
+                <button class="btn" style="flex: 1; background: var(--accent-blue); color: white;" onclick="confirmEditEntry()">Update Entry</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast">Action completed</div>
 
     <script>
-        // ===== DATA LAYER =====
         const STORAGE_KEY = 'mechanic_efficiency_data';
         const DELETE_PIN = '1234';
+        const SAVE_PIN = '1234';
         
         const DEFAULT_COLORS = [
             '#3b82f6', '#22c55e', '#eab308', '#ec4899', 
@@ -1207,12 +1519,7 @@
             '#84cc16', '#6366f1', '#14b8a6', '#f43f5e'
         ];
 
-        const DEFAULT_MECHANICS = [
-            { id: 'david', name: 'David', color: '#3b82f6' },
-            { id: 'darnell', name: 'Darnell', color: '#22c55e' },
-            { id: 'will', name: 'Will', color: '#eab308' },
-            { id: 'xavier', name: 'Xavier', color: '#ec4899' }
-        ];
+        const INITIAL_DATA = {"entries":[{"mechanicId":"david","weekStart":"2025-10-01","weekEnd":"2025-10-07","hoursWorked":33.75,"laborGenerated":1940.01,"efficiency":38.3,"hourlyRate":57.48,"createdAt":1767055299820,"id":"1767055299820"},{"mechanicId":"david","weekStart":"2025-10-08","weekEnd":"2025-10-14","hoursWorked":40.13,"laborGenerated":1872.63,"efficiency":31.1,"hourlyRate":46.66,"createdAt":1767055315220,"id":"1767055315220"},{"mechanicId":"david","weekStart":"2025-10-15","weekEnd":"2025-10-21","hoursWorked":32.08,"laborGenerated":579.12,"efficiency":12,"hourlyRate":18.05,"createdAt":1767055330916,"id":"1767055330916"},{"mechanicId":"david","weekStart":"2025-10-22","weekEnd":"2025-10-28","hoursWorked":42.73,"laborGenerated":3268.67,"efficiency":51,"hourlyRate":76.5,"createdAt":1767055368212,"id":"1767055368212"},{"mechanicId":"david","weekStart":"2025-10-29","weekEnd":"2025-11-04","hoursWorked":41.12,"laborGenerated":1894.94,"efficiency":30.7,"hourlyRate":46.08,"createdAt":1767055445419,"id":"1767055445419"},{"mechanicId":"david","weekStart":"2025-11-05","weekEnd":"2025-11-11","hoursWorked":40.1,"laborGenerated":2518.95,"efficiency":41.9,"hourlyRate":62.82,"createdAt":1767055534738,"id":"1767055534738"},{"mechanicId":"david","weekStart":"2025-11-12","weekEnd":"2025-11-18","hoursWorked":41,"laborGenerated":3228.58,"efficiency":52.5,"hourlyRate":78.75,"createdAt":1767055584506,"id":"1767055584506"},{"mechanicId":"david","weekStart":"2025-11-19","weekEnd":"2025-11-25","hoursWorked":39.25,"laborGenerated":3387.82,"efficiency":57.5,"hourlyRate":86.31,"createdAt":1767056062278,"id":"1767056062278"},{"mechanicId":"david","weekStart":"2025-11-26","weekEnd":"2025-12-02","hoursWorked":38.97,"laborGenerated":2747.35,"efficiency":47,"hourlyRate":70.5,"createdAt":1767056105454,"id":"1767056105454"},{"mechanicId":"david","weekStart":"2025-12-03","weekEnd":"2025-12-09","hoursWorked":42.7,"laborGenerated":1154.25,"efficiency":18,"hourlyRate":27.03,"createdAt":1767056134542,"id":"1767056134542"},{"mechanicId":"david","weekStart":"2025-12-10","weekEnd":"2025-12-16","hoursWorked":31.57,"laborGenerated":2783.95,"efficiency":58.8,"hourlyRate":88.18,"createdAt":1767056186709,"id":"1767056186709"},{"mechanicId":"david","weekStart":"2025-12-17","weekEnd":"2025-12-23","hoursWorked":39.5,"laborGenerated":1821.28,"efficiency":30.7,"hourlyRate":46.11,"createdAt":1767056212892,"id":"1767056212892"},{"mechanicId":"darnell","weekStart":"2025-12-17","weekEnd":"2025-12-23","hoursWorked":39.83,"laborGenerated":1023.92,"efficiency":17.1,"hourlyRate":25.71,"createdAt":1767056287884,"id":"1767056287884"},{"mechanicId":"darnell","weekStart":"2025-12-10","weekEnd":"2025-12-16","hoursWorked":39.02,"laborGenerated":1433.87,"efficiency":24.5,"hourlyRate":36.75,"createdAt":1767056317596,"id":"1767056317596"},{"mechanicId":"darnell","weekStart":"2025-12-03","weekEnd":"2025-12-09","hoursWorked":39.73,"laborGenerated":2119.9,"efficiency":35.6,"hourlyRate":53.36,"createdAt":1767056327676,"id":"1767056327676"},{"mechanicId":"darnell","weekStart":"2025-11-26","weekEnd":"2025-12-02","hoursWorked":39.28,"laborGenerated":1603.93,"efficiency":27.2,"hourlyRate":40.83,"createdAt":1767056349660,"id":"1767056349660"},{"mechanicId":"darnell","weekStart":"2025-11-19","weekEnd":"2025-11-25","hoursWorked":40.03,"laborGenerated":3387.82,"efficiency":56.4,"hourlyRate":84.63,"createdAt":1767056364948,"id":"1767056364948"},{"mechanicId":"darnell","weekStart":"2025-11-12","weekEnd":"2025-11-18","hoursWorked":39.8,"laborGenerated":932.02,"efficiency":15.6,"hourlyRate":23.42,"createdAt":1767056377620,"id":"1767056377620"},{"mechanicId":"darnell","weekStart":"2025-11-05","weekEnd":"2025-11-11","hoursWorked":39.68,"laborGenerated":877.94,"efficiency":14.8,"hourlyRate":22.13,"createdAt":1767056394691,"id":"1767056394691"},{"mechanicId":"darnell","weekStart":"2025-10-29","weekEnd":"2025-11-04","hoursWorked":41.65,"laborGenerated":3833.55,"efficiency":61.4,"hourlyRate":92.04,"createdAt":1767056406068,"id":"1767056406068"},{"mechanicId":"darnell","weekStart":"2025-10-22","weekEnd":"2025-10-28","hoursWorked":40.77,"laborGenerated":1296.88,"efficiency":21.2,"hourlyRate":31.81,"createdAt":1767056418476,"id":"1767056418476"},{"mechanicId":"darnell","weekStart":"2025-10-15","weekEnd":"2025-10-21","hoursWorked":40.77,"laborGenerated":1296.88,"efficiency":21.2,"hourlyRate":31.81,"createdAt":1767056439667,"id":"1767056439668"},{"mechanicId":"darnell","weekStart":"2025-10-08","weekEnd":"2025-10-14","hoursWorked":41.98,"laborGenerated":2807.74,"efficiency":44.6,"hourlyRate":66.88,"createdAt":1767056451899,"id":"1767056451899"},{"mechanicId":"darnell","weekStart":"2025-10-01","weekEnd":"2025-10-07","hoursWorked":41.77,"laborGenerated":1489.7,"efficiency":23.8,"hourlyRate":35.66,"createdAt":1767056460931,"id":"1767056460931"},{"mechanicId":"will","weekStart":"2025-12-17","weekEnd":"2025-12-23","hoursWorked":40.57,"laborGenerated":3005.66,"efficiency":49.4,"hourlyRate":74.09,"createdAt":1767056579426,"id":"1767056570986"},{"mechanicId":"will","weekStart":"2025-12-10","weekEnd":"2025-12-16","hoursWorked":42.62,"laborGenerated":3500.18,"efficiency":54.8,"hourlyRate":82.13,"createdAt":1767056590002,"id":"1767056590002"},{"mechanicId":"will","weekStart":"2025-12-03","weekEnd":"2025-12-09","hoursWorked":42.62,"laborGenerated":3500.18,"efficiency":54.8,"hourlyRate":82.13,"createdAt":1767056641314,"id":"1767056641314"},{"mechanicId":"will","weekStart":"2025-11-26","weekEnd":"2025-12-02","hoursWorked":41.58,"laborGenerated":1998.05,"efficiency":32,"hourlyRate":48.05,"createdAt":1767056648889,"id":"1767056648889"},{"mechanicId":"will","weekStart":"2025-11-19","weekEnd":"2025-11-25","hoursWorked":46.45,"laborGenerated":4885.91,"efficiency":70.1,"hourlyRate":105.19,"createdAt":1767056662338,"id":"1767056662338"},{"mechanicId":"will","weekStart":"2025-11-12","weekEnd":"2025-11-18","hoursWorked":39.75,"laborGenerated":3212.04,"efficiency":53.9,"hourlyRate":80.81,"createdAt":1767056671610,"id":"1767056671610"},{"mechanicId":"will","weekStart":"2025-11-05","weekEnd":"2025-11-11","hoursWorked":41.92,"laborGenerated":3303.67,"efficiency":52.5,"hourlyRate":78.81,"createdAt":1767056680530,"id":"1767056680530"},{"mechanicId":"will","weekStart":"2025-10-29","weekEnd":"2025-11-04","hoursWorked":41,"laborGenerated":3827.47,"efficiency":62.2,"hourlyRate":93.35,"createdAt":1767056689297,"id":"1767056689297"},{"mechanicId":"will","weekStart":"2025-10-22","weekEnd":"2025-10-28","hoursWorked":40,"laborGenerated":3106.3,"efficiency":51.8,"hourlyRate":77.66,"createdAt":1767056699841,"id":"1767056699841"},{"mechanicId":"will","weekStart":"2025-10-15","weekEnd":"2025-10-21","hoursWorked":42.43,"laborGenerated":5516.64,"efficiency":86.7,"hourlyRate":130.02,"createdAt":1767056713649,"id":"1767056713649"},{"mechanicId":"will","weekStart":"2025-10-08","weekEnd":"2025-10-14","hoursWorked":41.17,"laborGenerated":3663.25,"efficiency":59.3,"hourlyRate":88.98,"createdAt":1767056729937,"id":"1767056729937"},{"mechanicId":"will","weekStart":"2025-10-01","weekEnd":"2025-10-07","hoursWorked":42.74,"laborGenerated":3356.24,"efficiency":52.4,"hourlyRate":78.53,"createdAt":1767056739209,"id":"1767056739209"},{"mechanicId":"xavier","weekStart":"2025-12-17","weekEnd":"2025-12-23","hoursWorked":39.53,"laborGenerated":1631.07,"efficiency":27.5,"hourlyRate":41.26,"createdAt":1767056760881,"id":"1767056760881"},{"mechanicId":"xavier","weekStart":"2025-12-10","weekEnd":"2025-12-16","hoursWorked":39.52,"laborGenerated":2193.48,"efficiency":37,"hourlyRate":55.5,"createdAt":1767056770177,"id":"1767056770177"},{"mechanicId":"xavier","weekStart":"2025-12-03","weekEnd":"2025-12-09","hoursWorked":36.23,"laborGenerated":2534.51,"efficiency":46.6,"hourlyRate":69.96,"createdAt":1767056779705,"id":"1767056779705"},{"mechanicId":"xavier","weekStart":"2025-11-26","weekEnd":"2025-12-02","hoursWorked":35.67,"laborGenerated":1077.39,"efficiency":20.1,"hourlyRate":30.2,"createdAt":1767056790705,"id":"1767056790705"},{"mechanicId":"xavier","weekStart":"2025-11-19","weekEnd":"2025-11-25","hoursWorked":41.58,"laborGenerated":2389.3,"efficiency":38.3,"hourlyRate":57.46,"createdAt":1767056804193,"id":"1767056804193"},{"mechanicId":"xavier","weekStart":"2025-11-12","weekEnd":"2025-11-18","hoursWorked":37.35,"laborGenerated":3373.96,"efficiency":60.2,"hourlyRate":90.33,"createdAt":1767056814473,"id":"1767056814473"},{"mechanicId":"xavier","weekStart":"2025-11-05","weekEnd":"2025-11-11","hoursWorked":39.45,"laborGenerated":1131.48,"efficiency":19.1,"hourlyRate":28.68,"createdAt":1767056826889,"id":"1767056826889"},{"mechanicId":"xavier","weekStart":"2025-10-29","weekEnd":"2025-11-04","hoursWorked":38.25,"laborGenerated":1634.72,"efficiency":28.5,"hourlyRate":42.74,"createdAt":1767056837753,"id":"1767056837753"},{"mechanicId":"xavier","weekStart":"2025-10-22","weekEnd":"2025-10-28","hoursWorked":39.2,"laborGenerated":2043.38,"efficiency":34.8,"hourlyRate":52.13,"createdAt":1767056851401,"id":"1767056851401"},{"mechanicId":"xavier","weekStart":"2025-10-15","weekEnd":"2025-10-21","hoursWorked":35.68,"laborGenerated":771.95,"efficiency":14.4,"hourlyRate":21.64,"createdAt":1767056868488,"id":"1767056868488"},{"mechanicId":"xavier","weekStart":"2025-10-08","weekEnd":"2025-10-14","hoursWorked":39.88,"laborGenerated":626.16,"efficiency":10.5,"hourlyRate":15.7,"createdAt":1767056886296,"id":"1767056886296"},{"mechanicId":"xavier","weekStart":"2025-10-01","weekEnd":"2025-10-07","hoursWorked":32.37,"laborGenerated":2667.39,"efficiency":54.9,"hourlyRate":82.4,"createdAt":1767056900984,"id":"1767056900984"}],"mechanics":[{"id":"david","name":"David","color":"#3b82f6"},{"id":"darnell","name":"Darnell","color":"#22c55e"},{"id":"will","name":"Will","color":"#eab308"},{"id":"xavier","name":"Xavier","color":"#ec4899"}],"settings":{"targetRate":150,"targetEfficiency":50}};
 
         let settings = {
             targetRate: 150,
@@ -1220,10 +1527,12 @@
         };
 
         let currentTab = 'overview';
-        let rangeByTab = { overview: '3m', shopAvg: '3m' };
+        let rangeByTab = { overview: '3m', comparisonChart: '3m' };
         let selectedColor = DEFAULT_COLORS[0];
         let mechanicToDelete = null;
         let entryToDelete = null;
+        let entryToSave = null;
+        let entryToEdit = null;
         let selectedWeeks = {};
         let openCalendars = {};
 
@@ -1231,20 +1540,12 @@
             const stored = localStorage.getItem(STORAGE_KEY);
             if (stored) {
                 try {
-                    const data = JSON.parse(stored);
-                    if (!data.mechanics) {
-                        data.mechanics = [...DEFAULT_MECHANICS];
-                    }
-                    return data;
+                    return JSON.parse(stored);
                 } catch (e) {
                     console.error('Failed to parse stored data:', e);
                 }
             }
-            return { 
-                entries: [], 
-                mechanics: [...DEFAULT_MECHANICS],
-                settings: { ...settings } 
-            };
+            return { ...INITIAL_DATA };
         }
 
         function saveData(data) {
@@ -1293,6 +1594,22 @@
             saveData(data);
         }
 
+        function updateEntry(id, updates) {
+            const data = loadData();
+            const idx = data.entries.findIndex(e => e.id === id);
+            if (idx >= 0) {
+                const result = calculateEfficiency(updates.hoursWorked, updates.laborGenerated);
+                data.entries[idx] = {
+                    ...data.entries[idx],
+                    hoursWorked: updates.hoursWorked,
+                    laborGenerated: updates.laborGenerated,
+                    efficiency: result.efficiency,
+                    hourlyRate: result.hourlyRate
+                };
+                saveData(data);
+            }
+        }
+
         function loadSettings() {
             const data = loadData();
             if (data.settings) {
@@ -1316,7 +1633,6 @@
             document.getElementById('rateDisplay').textContent = settings.targetRate;
         }
 
-        // ===== WEEK CALCULATIONS =====
         function getWeekStart(date) {
             const d = new Date(date);
             const day = d.getDay();
@@ -1348,7 +1664,10 @@
             return date.toLocaleDateString('en-US', { month: 'short' });
         }
 
-        // ===== EFFICIENCY CALCULATION =====
+        function getMonthYear(date) {
+            return date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+        }
+
         function calculateEfficiency(hours, labor) {
             if (!hours || hours <= 0) return null;
             const hourlyRate = labor / hours;
@@ -1387,7 +1706,6 @@
             }
         }
 
-        // ===== RANKING FUNCTIONS =====
         function calculateRankings(entries, mechanics) {
             const rankings = {
                 latest: [],
@@ -1402,11 +1720,9 @@
                 const mechEntries = entries.filter(e => e.mechanicId === m.id)
                     .sort((a, b) => new Date(b.weekStart) - new Date(a.weekStart));
                 
-                // Latest entry efficiency
                 const latestEntry = mechEntries[0];
                 const latestEff = latestEntry ? latestEntry.efficiency : null;
                 
-                // 1M average
                 const oneMonthEntries = mechEntries.filter(e => new Date(e.weekStart) >= oneMonthAgo);
                 const oneMonthAvg = oneMonthEntries.length > 0
                     ? oneMonthEntries.reduce((sum, e) => sum + e.efficiency, 0) / oneMonthEntries.length
@@ -1416,11 +1732,9 @@
                 rankings.longTerm.push({ id: m.id, name: m.name, value: oneMonthAvg });
             });
 
-            // Sort by efficiency (highest first)
             rankings.latest.sort((a, b) => (b.value || 0) - (a.value || 0));
             rankings.longTerm.sort((a, b) => (b.value || 0) - (a.value || 0));
 
-            // Assign ranks
             const latestRanks = {};
             const longTermBest = rankings.longTerm[0]?.id;
 
@@ -1431,7 +1745,6 @@
             return { latestRanks, longTermBest };
         }
 
-        // ===== MODALS =====
         function openSettings() {
             document.getElementById('settingsModal').classList.add('visible');
         }
@@ -1445,6 +1758,51 @@
             closeSettings();
             renderAll();
             showToast('Settings saved');
+        }
+
+        function openImportModal() {
+            document.getElementById('importData').value = '';
+            document.getElementById('importModal').classList.add('visible');
+        }
+
+        function closeImportModal() {
+            document.getElementById('importModal').classList.remove('visible');
+        }
+
+        function importData() {
+            const jsonText = document.getElementById('importData').value.trim();
+            if (!jsonText) {
+                showToast('Please paste JSON data');
+                return;
+            }
+
+            try {
+                const data = JSON.parse(jsonText);
+                if (!data.entries || !data.mechanics) {
+                    showToast('Invalid JSON format');
+                    return;
+                }
+                
+                saveData(data);
+                loadSettings();
+                closeImportModal();
+                renderAll();
+                showToast(`✅ Imported ${data.entries.length} entries for ${data.mechanics.length} mechanics`);
+            } catch (e) {
+                showToast('Error parsing JSON: ' + e.message);
+            }
+        }
+
+        function exportData() {
+            const data = loadData();
+            const json = JSON.stringify(data, null, 2);
+            const blob = new Blob([json], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `shop-efficiency-${formatDate(new Date())}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
         }
 
         function openAddMechanic() {
@@ -1502,14 +1860,14 @@
             document.getElementById('deleteMechanicName').textContent = mechanic.name;
             document.getElementById('pinError').classList.remove('visible');
             
-            document.querySelectorAll('.pin-digit').forEach(input => {
+            document.querySelectorAll('[data-pin]').forEach(input => {
                 input.value = '';
             });
             
             document.getElementById('deleteConfirmModal').classList.add('visible');
             
             setTimeout(() => {
-                document.querySelector('.pin-digit[data-pin="0"]').focus();
+                document.querySelector('[data-pin="0"]').focus();
             }, 100);
         }
 
@@ -1520,19 +1878,19 @@
 
         function handlePinInput(input, index) {
             if (input.value.length === 1 && index < 3) {
-                document.querySelector(`.pin-digit[data-pin="${index + 1}"]`).focus();
+                document.querySelector(`[data-pin="${index + 1}"]`).focus();
             }
         }
 
         function handlePinKeydown(event, index) {
             if (event.key === 'Backspace' && !event.target.value && index > 0) {
-                document.querySelector(`.pin-digit[data-pin="${index - 1}"]`).focus();
+                document.querySelector(`[data-pin="${index - 1}"]`).focus();
             }
         }
 
         function getEnteredPin() {
             let pin = '';
-            document.querySelectorAll('.pin-digit').forEach(input => {
+            document.querySelectorAll('[data-pin]').forEach(input => {
                 pin += input.value;
             });
             return pin;
@@ -1544,10 +1902,10 @@
             const enteredPin = getEnteredPin();
             if (enteredPin !== DELETE_PIN) {
                 document.getElementById('pinError').classList.add('visible');
-                document.querySelectorAll('.pin-digit').forEach(input => {
+                document.querySelectorAll('[data-pin]').forEach(input => {
                     input.value = '';
                 });
-                document.querySelector('.pin-digit[data-pin="0"]').focus();
+                document.querySelector('[data-pin="0"]').focus();
                 return;
             }
             
@@ -1566,10 +1924,110 @@
             showToast(`${name} deleted`);
         }
 
+        function handleSave(mechanicId) {
+            const weekStart = selectedWeeks[mechanicId];
+            const hours = parseFloat(document.getElementById(`hours-${mechanicId}`).value);
+            const labor = parseFloat(document.getElementById(`labor-${mechanicId}`).value);
+
+            if (!weekStart || !hours || !labor) return;
+
+            const result = calculateEfficiency(hours, labor);
+            const weekEnd = formatDate(getWeekEnd(new Date(weekStart + 'T00:00:00')));
+
+            const mechanics = getMechanics();
+            const mechanic = mechanics.find(m => m.id === mechanicId);
+
+            entryToSave = {
+                mechanicId,
+                weekStart,
+                weekEnd,
+                hoursWorked: hours,
+                laborGenerated: labor,
+                efficiency: result.efficiency,
+                hourlyRate: result.hourlyRate,
+                createdAt: Date.now()
+            };
+
+            document.getElementById('saveMechanicName').textContent = mechanic ? mechanic.name : 'mechanic';
+            document.getElementById('pinSaveError').classList.remove('visible');
+            
+            document.querySelectorAll('[data-pin-save]').forEach(input => {
+                input.value = '';
+            });
+            
+            document.getElementById('saveEntryModal').classList.add('visible');
+            
+            setTimeout(() => {
+                document.querySelector('[data-pin-save="0"]').focus();
+            }, 100);
+        }
+
+        function closeSaveEntry() {
+            document.getElementById('saveEntryModal').classList.remove('visible');
+            entryToSave = null;
+        }
+
+        function handleSavePinInput(input, index) {
+            if (input.value.length === 1 && index < 3) {
+                document.querySelector(`[data-pin-save="${index + 1}"]`).focus();
+            }
+        }
+
+        function handleSavePinKeydown(event, index) {
+            if (event.key === 'Backspace' && !event.target.value && index > 0) {
+                document.querySelector(`[data-pin-save="${index - 1}"]`).focus();
+            }
+        }
+
+        function getSavePin() {
+            let pin = '';
+            document.querySelectorAll('[data-pin-save]').forEach(input => {
+                pin += input.value;
+            });
+            return pin;
+        }
+
+        function confirmSaveEntry() {
+            if (!entryToSave) return;
+            
+            const enteredPin = getSavePin();
+            if (enteredPin !== SAVE_PIN) {
+                document.getElementById('pinSaveError').classList.add('visible');
+                document.querySelectorAll('[data-pin-save]').forEach(input => {
+                    input.value = '';
+                });
+                document.querySelector('[data-pin-save="0"]').focus();
+                return;
+            }
+
+            const mechanics = getMechanics();
+            const mechanic = mechanics.find(m => m.id === entryToSave.mechanicId);
+            
+            addEntry(entryToSave);
+            showToast(`Entry saved for ${mechanic ? mechanic.name : 'mechanic'}`);
+            
+            document.getElementById(`hours-${entryToSave.mechanicId}`).value = '';
+            document.getElementById(`labor-${entryToSave.mechanicId}`).value = '';
+            updateResult(entryToSave.mechanicId);
+            
+            closeSaveEntry();
+            renderAll();
+        }
+
         function openDeleteEntry(entryId, weekLabel) {
             entryToDelete = entryId;
             document.getElementById('deleteEntryWeek').textContent = weekLabel;
+            document.getElementById('pinDeleteError').classList.remove('visible');
+            
+            document.querySelectorAll('[data-pin-delete]').forEach(input => {
+                input.value = '';
+            });
+            
             document.getElementById('deleteEntryModal').classList.add('visible');
+            
+            setTimeout(() => {
+                document.querySelector('[data-pin-delete="0"]').focus();
+            }, 100);
         }
 
         function closeDeleteEntry() {
@@ -1577,15 +2035,126 @@
             entryToDelete = null;
         }
 
+        function handleDeletePinInput(input, index) {
+            if (input.value.length === 1 && index < 3) {
+                document.querySelector(`[data-pin-delete="${index + 1}"]`).focus();
+            }
+        }
+
+        function handleDeletePinKeydown(event, index) {
+            if (event.key === 'Backspace' && !event.target.value && index > 0) {
+                document.querySelector(`[data-pin-delete="${index - 1}"]`).focus();
+            }
+        }
+
+        function getDeletePin() {
+            let pin = '';
+            document.querySelectorAll('[data-pin-delete]').forEach(input => {
+                pin += input.value;
+            });
+            return pin;
+        }
+
         function confirmDeleteEntry() {
             if (!entryToDelete) return;
+            
+            const enteredPin = getDeletePin();
+            if (enteredPin !== DELETE_PIN) {
+                document.getElementById('pinDeleteError').classList.add('visible');
+                document.querySelectorAll('[data-pin-delete]').forEach(input => {
+                    input.value = '';
+                });
+                document.querySelector('[data-pin-delete="0"]').focus();
+                return;
+            }
+            
             deleteEntry(entryToDelete);
             closeDeleteEntry();
             renderAll();
             showToast('Entry deleted');
         }
 
-        // ===== TOAST =====
+        function openEditEntry(entryId) {
+            const entries = getEntries();
+            const entry = entries.find(e => e.id === entryId);
+            if (!entry) return;
+
+            entryToEdit = entryId;
+            
+            const weekStart = new Date(entry.weekStart + 'T00:00:00');
+            const weekEnd = new Date(entry.weekEnd + 'T00:00:00');
+            document.getElementById('editEntryWeek').value = `${formatDateFull(weekStart)} — ${formatDateFull(weekEnd)}`;
+            document.getElementById('editEntryHours').value = entry.hoursWorked;
+            document.getElementById('editEntryLabor').value = entry.laborGenerated;
+            
+            document.getElementById('pinEditError').classList.remove('visible');
+            document.querySelectorAll('[data-pin-edit]').forEach(input => {
+                input.value = '';
+            });
+            
+            document.getElementById('editEntryModal').classList.add('visible');
+            
+            setTimeout(() => {
+                document.querySelector('[data-pin-edit="0"]').focus();
+            }, 100);
+        }
+
+        function closeEditEntry() {
+            document.getElementById('editEntryModal').classList.remove('visible');
+            entryToEdit = null;
+        }
+
+        function handleEditPinInput(input, index) {
+            if (input.value.length === 1 && index < 3) {
+                document.querySelector(`[data-pin-edit="${index + 1}"]`).focus();
+            }
+        }
+
+        function handleEditPinKeydown(event, index) {
+            if (event.key === 'Backspace' && !event.target.value && index > 0) {
+                document.querySelector(`[data-pin-edit="${index - 1}"]`).focus();
+            }
+        }
+
+        function getEditPin() {
+            let pin = '';
+            document.querySelectorAll('[data-pin-edit]').forEach(input => {
+                pin += input.value;
+            });
+            return pin;
+        }
+
+        function confirmEditEntry() {
+            if (!entryToEdit) return;
+            
+            const enteredPin = getEditPin();
+            if (enteredPin !== SAVE_PIN) {
+                document.getElementById('pinEditError').classList.add('visible');
+                document.querySelectorAll('[data-pin-edit]').forEach(input => {
+                    input.value = '';
+                });
+                document.querySelector('[data-pin-edit="0"]').focus();
+                return;
+            }
+
+            const hours = parseFloat(document.getElementById('editEntryHours').value);
+            const labor = parseFloat(document.getElementById('editEntryLabor').value);
+
+            if (!hours || !labor) {
+                showToast('Please enter valid values');
+                return;
+            }
+
+            updateEntry(entryToEdit, {
+                hoursWorked: hours,
+                laborGenerated: labor
+            });
+
+            closeEditEntry();
+            renderAll();
+            showToast('Entry updated');
+        }
+
         function showToast(message) {
             const toast = document.getElementById('toast');
             toast.textContent = message;
@@ -1593,7 +2162,6 @@
             setTimeout(() => toast.classList.remove('visible'), 3000);
         }
 
-        // ===== TAB HANDLING =====
         function initTabs() {
             renderTabs();
         }
@@ -1603,7 +2171,10 @@
             const panelsContainer = document.getElementById('tabPanels');
             const mechanics = getMechanics();
 
-            let tabsHtml = '<button class="main-tab ' + (currentTab === 'overview' ? 'active' : '') + '" data-tab="overview">Overview</button>';
+            let tabsHtml = `
+                <button class="main-tab ${currentTab === 'overview' ? 'active' : ''}" data-tab="overview">Overview</button>
+                <button class="main-tab ${currentTab === 'reports' ? 'active' : ''}" data-tab="reports">Reports</button>
+            `;
             
             mechanics.forEach(m => {
                 tabsHtml += `
@@ -1616,7 +2187,10 @@
             tabsHtml += '<button class="add-mechanic-btn" onclick="openAddMechanic()">+ Add Mechanic</button>';
             tabsContainer.innerHTML = tabsHtml;
 
-            let panelsHtml = '<div class="tab-panel ' + (currentTab === 'overview' ? 'active' : '') + '" data-panel="overview" id="overviewPanel"></div>';
+            let panelsHtml = `
+                <div class="tab-panel ${currentTab === 'overview' ? 'active' : ''}" data-panel="overview" id="overviewPanel"></div>
+                <div class="tab-panel ${currentTab === 'reports' ? 'active' : ''}" data-panel="reports" id="reportsPanel"></div>
+            `;
             
             mechanics.forEach(m => {
                 panelsHtml += `<div class="tab-panel ${currentTab === m.id ? 'active' : ''}" data-panel="${m.id}" id="${m.id}Panel"></div>`;
@@ -1633,11 +2207,28 @@
                     currentTab = tab.dataset.tab;
                     const panel = document.querySelector(`[data-panel="${currentTab}"]`);
                     if (panel) panel.classList.add('active');
+                    
+                    requestAnimationFrame(() => {
+                        if (currentTab === 'overview') {
+                            const entries = getEntries();
+                            if (entries.length > 0) {
+                                renderShopAvgChart();
+                                renderComparisonChart();
+                            }
+                        } else if (currentTab === 'reports') {
+                            renderReportsPanel();
+                        } else {
+                            const entries = getEntries();
+                            const mechEntries = entries.filter(e => e.mechanicId === currentTab);
+                            if (mechEntries.length > 0) {
+                                renderMechanicChart(currentTab);
+                            }
+                        }
+                    });
                 });
             });
         }
 
-        // ===== CALENDAR FUNCTIONS =====
         function toggleCalendar(mechanicId) {
             const dropdown = document.getElementById(`calendar-dropdown-${mechanicId}`);
             const isOpen = dropdown.classList.contains('open');
@@ -1728,7 +2319,7 @@
             
             const weekEnd = getWeekEnd(weekStart);
             document.getElementById(`week-input-${mechanicId}`).textContent = 
-                `${formatDateFull(weekStart)} – ${formatDateFull(weekEnd)}`;
+                `${formatDateFull(weekStart)} — ${formatDateFull(weekEnd)}`;
             
             document.getElementById(`calendar-dropdown-${mechanicId}`).classList.remove('open');
             
@@ -1742,10 +2333,10 @@
             renderCalendar(mechanicId);
         }
 
-        // ===== RENDER FUNCTIONS =====
         function renderAll() {
             renderTabs();
             renderOverviewPanel();
+            renderReportsPanel();
             getMechanics().forEach(m => renderMechanicPanel(m.id));
         }
 
@@ -1764,7 +2355,6 @@
                 : null;
             const shopAvgStatus = shopAvgEfficiency !== null ? getStatus(shopAvgEfficiency) : 'none';
 
-            // Calculate rankings
             const { latestRanks, longTermBest } = calculateRankings(entries, mechanics);
 
             let html = `
@@ -1788,6 +2378,20 @@
                             </div>
                         </div>
                         <div class="chart-container" id="shopAvgChart"></div>
+                    </div>
+                </div>
+
+                <div class="shop-avg-card">
+                    <div class="chart-section" style="margin-bottom: 0;">
+                        <div class="chart-header">
+                            <div class="chart-title">Mechanic Comparison - Efficiency Trends</div>
+                            <div class="chart-range-btns">
+                                <button class="range-btn ${(rangeByTab['comparisonChart'] || '3m') === '1m' ? 'active' : ''}" onclick="setComparisonRange('1m')">1M</button>
+                                <button class="range-btn ${(rangeByTab['comparisonChart'] || '3m') === '3m' ? 'active' : ''}" onclick="setComparisonRange('3m')">3M</button>
+                                <button class="range-btn ${(rangeByTab['comparisonChart'] || '3m') === '6m' ? 'active' : ''}" onclick="setComparisonRange('6m')">6M</button>
+                            </div>
+                        </div>
+                        <div class="chart-container" id="comparisonChart"></div>
                     </div>
                 </div>
 
@@ -1865,8 +2469,278 @@
             container.innerHTML = html;
 
             if (entries.length > 0) {
-                renderShopAvgChart();
+                requestAnimationFrame(() => {
+                    renderShopAvgChart();
+                    renderComparisonChart();
+                });
             }
+        }
+
+        function setComparisonRange(range) {
+            rangeByTab['comparisonChart'] = range;
+            renderComparisonChart();
+        }
+
+        function renderComparisonChart() {
+            const container = document.getElementById('comparisonChart');
+            if (!container) return;
+
+            const entries = getEntries();
+            const mechanics = getMechanics();
+            const currentRange = rangeByTab['comparisonChart'] || '3m';
+            const rangeWeeks = getRangeWeeks(currentRange);
+
+            const weekData = {};
+            entries.filter(e => new Date(e.weekStart) >= rangeWeeks.start).forEach(e => {
+                if (!weekData[e.weekStart]) {
+                    weekData[e.weekStart] = {};
+                }
+                weekData[e.weekStart][e.mechanicId] = e.efficiency;
+            });
+
+            const weeks = Object.keys(weekData).sort();
+            if (weeks.length === 0) {
+                container.innerHTML = '<div class="no-data" style="padding: 40px;">No data for this period</div>';
+                return;
+            }
+
+            const data = weeks.map(w => {
+                const d = { week: w, label: formatDateShort(new Date(w + 'T00:00:00')) };
+                mechanics.forEach(m => {
+                    d[m.id] = weekData[w][m.id] || null;
+                });
+                return d;
+            });
+
+            const allValues = [];
+            data.forEach(d => {
+                mechanics.forEach(m => {
+                    if (d[m.id] !== null) allValues.push(d[m.id]);
+                });
+            });
+
+            const minVal = allValues.length > 0 ? Math.min(...allValues, settings.targetEfficiency) - 10 : 0;
+            const maxVal = allValues.length > 0 ? Math.max(...allValues, settings.targetEfficiency) + 10 : 100;
+
+            const lines = mechanics.map(m => ({
+                key: m.id,
+                color: m.color,
+                label: m.name
+            }));
+
+            renderLineChart(container, data, minVal, maxVal, lines);
+        }
+
+        function renderReportsPanel() {
+            const container = document.getElementById('reportsPanel');
+            if (!container) return;
+
+            const entries = getEntries();
+            const mechanics = getMechanics();
+
+            if (entries.length === 0) {
+                container.innerHTML = `
+                    <div class="no-data">
+                        <div class="no-data-icon">📊</div>
+                        <p>No data available. Start logging efficiency entries to see reports.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            // Group entries by month
+            const monthlyData = {};
+            entries.forEach(e => {
+                const date = new Date(e.weekStart + 'T00:00:00');
+                const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+                
+                if (!monthlyData[monthKey]) {
+                    monthlyData[monthKey] = {
+                        date: date,
+                        entries: [],
+                        byMechanic: {}
+                    };
+                }
+                
+                monthlyData[monthKey].entries.push(e);
+                
+                if (!monthlyData[monthKey].byMechanic[e.mechanicId]) {
+                    monthlyData[monthKey].byMechanic[e.mechanicId] = [];
+                }
+                monthlyData[monthKey].byMechanic[e.mechanicId].push(e);
+            });
+
+            // Calculate leaderboard (who's been #1 most often)
+            const weeklyLeaders = {};
+            const leaderCount = {};
+            mechanics.forEach(m => leaderCount[m.id] = 0);
+
+            entries.forEach(e => {
+                const week = e.weekStart;
+                if (!weeklyLeaders[week]) {
+                    weeklyLeaders[week] = { id: e.mechanicId, eff: e.efficiency };
+                } else if (e.efficiency > weeklyLeaders[week].eff) {
+                    weeklyLeaders[week] = { id: e.mechanicId, eff: e.efficiency };
+                }
+            });
+
+            Object.values(weeklyLeaders).forEach(leader => {
+                leaderCount[leader.id]++;
+            });
+
+            const leaderboard = mechanics.map(m => ({
+                ...m,
+                weeksAtTop: leaderCount[m.id],
+                personalBest: Math.max(...entries.filter(e => e.mechanicId === m.id).map(e => e.efficiency))
+            })).sort((a, b) => b.weeksAtTop - a.weeksAtTop);
+
+            // Calculate streaks
+            const streakData = {};
+            mechanics.forEach(m => {
+                const mechEntries = entries.filter(e => e.mechanicId === m.id)
+                    .sort((a, b) => new Date(a.weekStart) - new Date(b.weekStart));
+                
+                let currentStreak = 0;
+                let streakType = null;
+                let longestAbove = 0;
+                let longestBelow = 0;
+
+                mechEntries.forEach(e => {
+                    const status = getStatus(e.efficiency);
+                    
+                    if (status === 'above') {
+                        if (streakType === 'above') {
+                            currentStreak++;
+                        } else {
+                            currentStreak = 1;
+                            streakType = 'above';
+                        }
+                        longestAbove = Math.max(longestAbove, currentStreak);
+                    } else {
+                        if (streakType === 'below') {
+                            currentStreak++;
+                        } else {
+                            currentStreak = 1;
+                            streakType = 'below';
+                        }
+                        longestBelow = Math.max(longestBelow, currentStreak);
+                    }
+                });
+
+                streakData[m.id] = {
+                    current: currentStreak,
+                    currentType: streakType,
+                    longestAbove,
+                    longestBelow
+                };
+            });
+
+            let html = `
+                <div class="leaderboard-section">
+                    <div class="leaderboard-title">🏆 Leaderboard History</div>
+                    <table class="leaderboard-table">
+                        <thead>
+                            <tr>
+                                <th>Rank</th>
+                                <th>Mechanic</th>
+                                <th>Weeks at #1</th>
+                                <th>Personal Best</th>
+                                <th>Current Streak</th>
+                                <th>Longest Above Target</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${leaderboard.map((m, idx) => {
+                                const streak = streakData[m.id];
+                                return `
+                                    <tr>
+                                        <td><span class="rank-badge rank-${idx + 1}">#${idx + 1}</span></td>
+                                        <td>
+                                            <div style="display: flex; align-items: center; gap: 8px;">
+                                                <div class="mechanic-avatar" style="background: ${m.color}; width: 24px; height: 24px; font-size: 0.75rem;">${m.name[0]}</div>
+                                                ${m.name}
+                                            </div>
+                                        </td>
+                                        <td style="font-family: var(--font-mono); font-weight: 600;">${m.weeksAtTop} weeks</td>
+                                        <td style="font-family: var(--font-mono); color: var(--status-green); font-weight: 600;">${m.personalBest}%</td>
+                                        <td>
+                                            ${streak.current > 0 ? `
+                                                <span class="streak-indicator ${streak.currentType}">
+                                                    ${streak.currentType === 'above' ? '🔥' : '📉'} ${streak.current} week${streak.current > 1 ? 's' : ''}
+                                                </span>
+                                            ` : '—'}
+                                        </td>
+                                        <td style="font-family: var(--font-mono);">${streak.longestAbove} weeks</td>
+                                    </tr>
+                                `;
+                            }).join('')}
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="reports-grid">
+            `;
+
+            // Sort months newest first
+            const sortedMonths = Object.keys(monthlyData).sort().reverse();
+
+            sortedMonths.forEach(monthKey => {
+                const month = monthlyData[monthKey];
+                const monthEntries = month.entries;
+                
+                const avgEff = Math.round(monthEntries.reduce((sum, e) => sum + e.efficiency, 0) / monthEntries.length * 10) / 10;
+                const totalHours = monthEntries.reduce((sum, e) => sum + e.hoursWorked, 0);
+                const totalLabor = monthEntries.reduce((sum, e) => sum + e.laborGenerated, 0);
+                
+                const topPerformer = mechanics.map(m => {
+                    const mechEntries = month.byMechanic[m.id] || [];
+                    const avg = mechEntries.length > 0 
+                        ? mechEntries.reduce((sum, e) => sum + e.efficiency, 0) / mechEntries.length
+                        : 0;
+                    return { ...m, avg };
+                }).sort((a, b) => b.avg - a.avg)[0];
+
+                const status = getStatus(avgEff);
+
+                html += `
+                    <div class="month-card">
+                        <div class="month-header">
+                            <div>
+                                <div class="month-title">${getMonthYear(month.date)}</div>
+                                <div style="font-size: 0.75rem; color: var(--text-muted);">${monthEntries.length} entries logged</div>
+                            </div>
+                            <div class="shop-avg-value ${getStatusColor(status)}" style="font-size: 1.5rem;">
+                                ${avgEff}%
+                            </div>
+                        </div>
+                        
+                        <div class="month-stats">
+                            <div class="stat-card">
+                                <div class="stat-label">Total Hours</div>
+                                <div class="stat-value">${Math.round(totalHours * 10) / 10}</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-label">Total Labor</div>
+                                <div class="stat-value">$${Math.round(totalLabor).toLocaleString()}</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-label">Top Performer</div>
+                                <div style="display: flex; align-items: center; gap: 8px; margin-top: 8px;">
+                                    <div class="mechanic-avatar" style="background: ${topPerformer.color}; width: 28px; height: 28px; font-size: 0.875rem;">${topPerformer.name[0]}</div>
+                                    <div>
+                                        <div style="font-weight: 600; font-size: 0.875rem;">${topPerformer.name}</div>
+                                        <div style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--status-green);">${Math.round(topPerformer.avg * 10) / 10}%</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += '</div>';
+
+            container.innerHTML = html;
         }
 
         function renderMechanicPanel(mechanicId) {
@@ -1899,10 +2773,10 @@
                         </div>
 
                         <div class="form-group">
-                            <label>Work Week (Wed–Tue)</label>
+                            <label>Work Week (Wed—Tue)</label>
                             <div class="calendar-picker">
                                 <div class="calendar-input" onclick="toggleCalendar('${mechanicId}')">
-                                    <span id="week-input-${mechanicId}">${formatDateFull(selectedWeekStart)} – ${formatDateFull(selectedWeekEnd)}</span>
+                                    <span id="week-input-${mechanicId}">${formatDateFull(selectedWeekStart)} — ${formatDateFull(selectedWeekEnd)}</span>
                                     <span>📅</span>
                                 </div>
                                 <div class="calendar-dropdown" id="calendar-dropdown-${mechanicId}">
@@ -1994,12 +2868,12 @@
                             <div class="stat-value ${getStatusColor(avgStatus)}">${avgEfficiency}%</div>
                         </div>
                         <div class="stat-card">
-                            <div class="stat-label">Hours (${currentRange.toUpperCase()})</div>
-                            <div class="stat-value">${totalHours}</div>
+                            <div class="stat-label">Total Hours (${currentRange.toUpperCase()})</div>
+                            <div class="stat-value">${Math.round(totalHours * 10) / 10}</div>
                         </div>
                         <div class="stat-card">
                             <div class="stat-label">Labor (${currentRange.toUpperCase()})</div>
-                            <div class="stat-value">$${totalLabor.toLocaleString()}</div>
+                            <div class="stat-value">$${Math.round(totalLabor).toLocaleString()}</div>
                         </div>
                     </div>
 
@@ -2021,12 +2895,14 @@
                     html += `
                         <div class="insights-section">
                             <div class="insights-title">Performance Observations</div>
-                            ${insights.map(i => `
-                                <div class="insight-item ${i.type}">
-                                    <span class="insight-week">${i.week}</span>
-                                    <span class="insight-text">${i.text}</span>
-                                </div>
-                            `).join('')}
+                            <div class="insights-scroll-container">
+                                ${insights.map(i => `
+                                    <div class="insight-item ${i.type}">
+                                        <span class="insight-week">${i.week}</span>
+                                        <span class="insight-text">${i.text}</span>
+                                    </div>
+                                `).join('')}
+                            </div>
                         </div>
                     `;
                 }
@@ -2034,36 +2910,41 @@
                 html += `
                     <div class="history-section">
                         <div class="insights-title">Entry History</div>
-                        <table class="history-table">
-                            <thead>
-                                <tr>
-                                    <th>Week</th>
-                                    <th>Hours</th>
-                                    <th>Labor</th>
-                                    <th>$/Hr</th>
-                                    <th>Efficiency</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                ${mechEntries.slice(0, 12).map(e => {
-                                    const status = getStatus(e.efficiency);
-                                    const color = status === 'above' ? 'var(--status-green)' : 
-                                                  status === 'at' ? 'var(--status-yellow)' : 'var(--status-red)';
-                                    const weekLabel = formatDateShort(new Date(e.weekStart + 'T00:00:00'));
-                                    return `
-                                        <tr>
-                                            <td>${weekLabel}</td>
-                                            <td>${e.hoursWorked}</td>
-                                            <td>$${e.laborGenerated.toLocaleString()}</td>
-                                            <td>$${e.hourlyRate}</td>
-                                            <td style="color: ${color}">${e.efficiency}%</td>
-                                            <td><button class="entry-delete-btn" onclick="openDeleteEntry('${e.id}', '${weekLabel}')">Delete</button></td>
-                                        </tr>
-                                    `;
-                                }).join('')}
-                            </tbody>
-                        </table>
+                        <div class="history-scroll-container">
+                            <table class="history-table">
+                                <thead>
+                                    <tr>
+                                        <th>Week</th>
+                                        <th>Hours</th>
+                                        <th>Labor</th>
+                                        <th>$/Hr</th>
+                                        <th>Efficiency</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${mechEntries.map(e => {
+                                        const status = getStatus(e.efficiency);
+                                        const color = status === 'above' ? 'var(--status-green)' : 
+                                                      status === 'at' ? 'var(--status-yellow)' : 'var(--status-red)';
+                                        const weekLabel = formatDateShort(new Date(e.weekStart + 'T00:00:00'));
+                                        return `
+                                            <tr>
+                                                <td>${weekLabel}</td>
+                                                <td>${e.hoursWorked}</td>
+                                                <td>$${e.laborGenerated.toLocaleString()}</td>
+                                                <td>$${e.hourlyRate}</td>
+                                                <td style="color: ${color}">${e.efficiency}%</td>
+                                                <td>
+                                                    <button class="entry-edit-btn" onclick="openEditEntry('${e.id}')">Edit</button>
+                                                    <button class="entry-delete-btn" onclick="openDeleteEntry('${e.id}', '${weekLabel}')">Delete</button>
+                                                </td>
+                                            </tr>
+                                        `;
+                                    }).join('')}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 `;
             }
@@ -2076,11 +2957,12 @@
             container.innerHTML = html;
 
             if (mechEntries.length > 0) {
-                renderMechanicChart(mechanicId);
+                requestAnimationFrame(() => {
+                    renderMechanicChart(mechanicId);
+                });
             }
         }
 
-        // ===== FORM HANDLERS =====
         function updateWeekDisplay(mechanicId) {
             const display = document.getElementById(`weekDisplay-${mechanicId}`);
             if (display && selectedWeeks[mechanicId]) {
@@ -2118,41 +3000,6 @@
             }
         }
 
-        function handleSave(mechanicId) {
-            const weekStart = selectedWeeks[mechanicId];
-            const hours = parseFloat(document.getElementById(`hours-${mechanicId}`).value);
-            const labor = parseFloat(document.getElementById(`labor-${mechanicId}`).value);
-
-            if (!weekStart || !hours || !labor) return;
-
-            const result = calculateEfficiency(hours, labor);
-            const weekEnd = formatDate(getWeekEnd(new Date(weekStart + 'T00:00:00')));
-
-            const mechanics = getMechanics();
-            const mechanic = mechanics.find(m => m.id === mechanicId);
-
-            const entry = {
-                mechanicId,
-                weekStart,
-                weekEnd,
-                hoursWorked: hours,
-                laborGenerated: labor,
-                efficiency: result.efficiency,
-                hourlyRate: result.hourlyRate,
-                createdAt: Date.now()
-            };
-
-            addEntry(entry);
-            showToast(`Entry saved for ${mechanic ? mechanic.name : 'mechanic'}`);
-            
-            document.getElementById(`hours-${mechanicId}`).value = '';
-            document.getElementById(`labor-${mechanicId}`).value = '';
-            updateResult(mechanicId);
-            
-            renderAll();
-        }
-
-        // ===== RANGE HANDLING =====
         function getRangeWeeks(range) {
             const now = new Date();
             const months = range === '1m' ? 1 : range === '3m' ? 3 : 6;
@@ -2171,7 +3018,6 @@
             renderOverviewPanel();
         }
 
-        // ===== INSIGHTS =====
         function calculateInsights(entries, mechanicId, range) {
             const insights = [];
             const rangeWeeks = getRangeWeeks(range);
@@ -2226,10 +3072,9 @@
                 }
             }
 
-            return insights.slice(0, 5);
+            return insights;
         }
 
-        // ===== CHART RENDERING =====
         function renderShopAvgChart() {
             const container = document.getElementById('shopAvgChart');
             if (!container) return;
@@ -2237,16 +3082,13 @@
             const entries = getEntries();
             const currentRange = rangeByTab['overview'] || '3m';
             
-            // Find the last entry date to use as end point
             const allEntriesSorted = [...entries].sort((a, b) => new Date(b.weekStart) - new Date(a.weekStart));
             const lastEntryDate = allEntriesSorted.length > 0 ? new Date(allEntriesSorted[0].weekStart) : new Date();
             
-            // Calculate start based on range from last entry
             const months = currentRange === '1m' ? 1 : currentRange === '3m' ? 3 : 6;
             const rangeStart = new Date(lastEntryDate);
             rangeStart.setMonth(rangeStart.getMonth() - months);
 
-            // Get all weeks from rangeStart to lastEntryDate
             const allWeeks = [];
             let weekStart = getWeekStart(rangeStart);
             const endWeek = getWeekStart(lastEntryDate);
@@ -2257,7 +3099,6 @@
                 weekStart.setDate(weekStart.getDate() + 7);
             }
 
-            // Group entries by week
             const weekData = {};
             entries.forEach(e => {
                 if (!weekData[e.weekStart]) {
@@ -2266,7 +3107,6 @@
                 weekData[e.weekStart].push(e.efficiency);
             });
 
-            // Build data with all weeks in range
             const data = allWeeks.map(w => {
                 const weekDate = new Date(w + 'T00:00:00');
                 return {
@@ -2295,6 +3135,12 @@
         function renderShopAvgChartWithWeeks(container, data) {
             const width = container.clientWidth - 20;
             const height = container.clientHeight - 20;
+            
+            if (width <= 0 || height <= 0) {
+                setTimeout(() => renderShopAvgChartWithWeeks(container, data), 50);
+                return;
+            }
+            
             const padding = { top: 30, right: 80, bottom: 60, left: 50 };
             const chartWidth = width - padding.left - padding.right;
             const chartHeight = height - padding.top - padding.bottom;
@@ -2304,19 +3150,16 @@
 
             let svg = `<svg class="chart-svg" viewBox="0 0 ${width} ${height}" preserveAspectRatio="xMidYMid meet">`;
 
-            // Fixed percentage grid lines: 0%, 10%, 20%, ..., 100%
             for (let pct = 0; pct <= 100; pct += 10) {
                 const y = yScale(pct);
                 svg += `<line x1="${padding.left}" y1="${y}" x2="${width - padding.right}" y2="${y}" stroke="var(--border-color)" stroke-opacity="0.4"/>`;
                 svg += `<text x="${padding.left - 8}" y="${y + 4}" fill="var(--text-muted)" font-size="10" text-anchor="end">${pct}%</text>`;
             }
 
-            // Target line
             const targetY = yScale(settings.targetEfficiency);
             svg += `<line x1="${padding.left}" y1="${targetY}" x2="${width - padding.right}" y2="${targetY}" stroke="var(--status-green)" stroke-opacity="0.8" stroke-width="2" stroke-dasharray="6,4"/>`;
             svg += `<text x="${width - padding.right + 5}" y="${targetY + 4}" fill="var(--status-green)" font-size="9" font-weight="600">Target ${settings.targetEfficiency}%</text>`;
 
-            // Group weeks by month for x-axis labels
             let lastMonth = '';
             const monthBoundaries = [];
             
@@ -2327,21 +3170,18 @@
                 }
             });
 
-            // Draw month separators and labels
             monthBoundaries.forEach((mb, idx) => {
                 const x = xScale(mb.index);
                 if (mb.index > 0) {
                     svg += `<line x1="${x}" y1="${padding.top}" x2="${x}" y2="${height - padding.bottom + 10}" stroke="var(--border-color)" stroke-opacity="0.6" stroke-dasharray="3,3"/>`;
                 }
                 
-                // Month label
                 const nextBoundary = monthBoundaries[idx + 1];
                 const endIndex = nextBoundary ? nextBoundary.index : data.length;
                 const midX = (xScale(mb.index) + xScale(endIndex - 1)) / 2;
                 svg += `<text x="${midX}" y="${height - 8}" fill="var(--text-primary)" font-size="11" font-weight="600" text-anchor="middle">${mb.month}</text>`;
             });
 
-            // Draw week labels (W1, W2, etc.) - auto-fit
             const maxLabels = Math.min(data.length, 16);
             const labelStep = Math.max(1, Math.ceil(data.length / maxLabels));
             
@@ -2351,8 +3191,7 @@
                 }
             });
 
-            // Draw the line and dots
-            const validPoints = data.map((d, i) => d.shopAvg !== null ? { x: xScale(i), y: yScale(d.shopAvg), val: d.shopAvg } : null).filter(p => p !== null);
+            const validPoints = data.map((d, i) => d.shopAvg !== null ? { x: xScale(i), y: yScale(d.shopAvg), val: d.shopAvg, label: d.label } : null).filter(p => p !== null);
 
             if (validPoints.length > 1) {
                 const pathPoints = validPoints.map(p => `${p.x},${p.y}`).join(' ');
@@ -2360,15 +3199,16 @@
             }
 
             validPoints.forEach(p => {
-                svg += `<circle cx="${p.x}" cy="${p.y}" r="5" fill="var(--accent-blue)" stroke="var(--bg-card)" stroke-width="2"/>`;
+                svg += `<circle class="chart-point" cx="${p.x}" cy="${p.y}" r="5" fill="var(--accent-blue)" stroke="var(--bg-card)" stroke-width="2" data-value="${p.val}" data-label="${p.label}" style="cursor: pointer;"/>`;
             });
 
-            // Legend
             svg += `<rect x="${width - padding.right + 10}" y="${padding.top + 30}" width="12" height="3" fill="var(--accent-blue)" rx="1"/>`;
             svg += `<text x="${width - padding.right + 28}" y="${padding.top + 34}" fill="var(--text-secondary)" font-size="10">Shop Avg</text>`;
 
             svg += '</svg>';
             container.innerHTML = svg;
+            
+            addChartTooltips(container);
         }
 
         function renderMechanicChart(mechanicId) {
@@ -2422,6 +3262,12 @@
         function renderLineChart(container, data, minVal, maxVal, lines) {
             const width = container.clientWidth - 20;
             const height = container.clientHeight - 20;
+            
+            if (width <= 0 || height <= 0) {
+                setTimeout(() => renderLineChart(container, data, minVal, maxVal, lines), 50);
+                return;
+            }
+            
             const padding = { top: 20, right: 100, bottom: 40, left: 50 };
             const chartWidth = width - padding.left - padding.right;
             const chartHeight = height - padding.top - padding.bottom;
@@ -2431,7 +3277,6 @@
 
             let svg = `<svg class="chart-svg" viewBox="0 0 ${width} ${height}" preserveAspectRatio="xMidYMid meet">`;
 
-            // Grid lines
             const gridLines = 5;
             for (let i = 0; i <= gridLines; i++) {
                 const y = padding.top + (i / gridLines) * chartHeight;
@@ -2440,12 +3285,10 @@
                 svg += `<text x="${padding.left - 10}" y="${y + 4}" fill="var(--text-muted)" font-size="10" text-anchor="end">${value}%</text>`;
             }
 
-            // Target line
             const targetY = yScale(settings.targetEfficiency);
             svg += `<line x1="${padding.left}" y1="${targetY}" x2="${width - padding.right}" y2="${targetY}" stroke="var(--status-green)" stroke-opacity="0.5" stroke-dasharray="4,4"/>`;
             svg += `<text x="${width - padding.right + 5}" y="${targetY + 4}" fill="var(--status-green)" font-size="9">Target</text>`;
 
-            // X-axis labels - auto fit
             const maxLabels = Math.min(data.length, 12);
             const labelStep = Math.max(1, Math.ceil(data.length / maxLabels));
             
@@ -2455,7 +3298,6 @@
                 }
             });
 
-            // Draw lines
             lines.forEach((line) => {
                 const points = data.map((d, i) => {
                     const val = d[line.key];
@@ -2469,12 +3311,11 @@
                 data.forEach((d, i) => {
                     const val = d[line.key];
                     if (val !== null && val !== undefined) {
-                        svg += `<circle cx="${xScale(i)}" cy="${yScale(val)}" r="4" fill="${line.color}" stroke="var(--bg-card)" stroke-width="2"/>`;
+                        svg += `<circle class="chart-point" cx="${xScale(i)}" cy="${yScale(val)}" r="4" fill="${line.color}" stroke="var(--bg-card)" stroke-width="2" data-value="${val}" data-label="${d.label}" data-name="${line.label}" style="cursor: pointer;"/>`;
                     }
                 });
             });
 
-            // Legend
             lines.forEach((line, i) => {
                 const y = padding.top + 10 + i * 16;
                 svg += `<rect x="${width - padding.right + 10}" y="${y}" width="12" height="3" fill="${line.color}" rx="1"/>`;
@@ -2483,22 +3324,50 @@
 
             svg += '</svg>';
             container.innerHTML = svg;
+            
+            addChartTooltips(container);
         }
 
-        // ===== EXPORT =====
-        function exportData() {
-            const data = loadData();
-            const json = JSON.stringify(data, null, 2);
-            const blob = new Blob([json], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `shop-efficiency-${formatDate(new Date())}.json`;
-            a.click();
-            URL.revokeObjectURL(url);
+        function addChartTooltips(container) {
+            let tooltip = container.querySelector('.chart-tooltip');
+            if (!tooltip) {
+                tooltip = document.createElement('div');
+                tooltip.className = 'chart-tooltip';
+                container.appendChild(tooltip);
+            }
+
+            const points = container.querySelectorAll('.chart-point');
+            points.forEach(point => {
+                point.addEventListener('mouseenter', (e) => {
+                    const value = e.target.getAttribute('data-value');
+                    const label = e.target.getAttribute('data-label');
+                    const name = e.target.getAttribute('data-name');
+                    
+                    let tooltipHTML = `<div class="tooltip-label">${label}</div>`;
+                    if (name) {
+                        tooltipHTML += `<div style="font-size: 0.7rem; color: var(--text-muted); margin-bottom: 2px;">${name}</div>`;
+                    }
+                    tooltipHTML += `<div class="tooltip-value">${value}% Efficiency</div>`;
+                    
+                    tooltip.innerHTML = tooltipHTML;
+                    tooltip.classList.add('visible');
+                });
+
+                point.addEventListener('mousemove', (e) => {
+                    const rect = container.getBoundingClientRect();
+                    const x = e.clientX - rect.left + 10;
+                    const y = e.clientY - rect.top - 10;
+                    
+                    tooltip.style.left = x + 'px';
+                    tooltip.style.top = y + 'px';
+                });
+
+                point.addEventListener('mouseleave', () => {
+                    tooltip.classList.remove('visible');
+                });
+            });
         }
 
-        // ===== INITIALIZATION =====
         document.addEventListener('DOMContentLoaded', () => {
             loadSettings();
             initTabs();
@@ -2511,12 +3380,15 @@
             }
         });
 
-        ['settingsModal', 'addMechanicModal', 'deleteConfirmModal', 'deleteEntryModal'].forEach(id => {
-            document.getElementById(id).addEventListener('click', (e) => {
-                if (e.target.id === id) {
-                    e.target.classList.remove('visible');
-                }
-            });
+        ['settingsModal', 'addMechanicModal', 'deleteConfirmModal', 'deleteEntryModal', 'saveEntryModal', 'importModal', 'editEntryModal'].forEach(id => {
+            const modal = document.getElementById(id);
+            if (modal) {
+                modal.addEventListener('click', (e) => {
+                    if (e.target.id === id) {
+                        e.target.classList.remove('visible');
+                    }
+                });
+            }
         });
     </script>
 </body>
