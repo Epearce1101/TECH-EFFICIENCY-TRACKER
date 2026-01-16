@@ -1,0 +1,4546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#1a1d23">
+    <title>Shop Efficiency Tracker</title>
+    <style>
+        :root {
+            --bg-dark: #1a1d23;
+            --bg-card: #22262e;
+            --bg-input: #2a2f38;
+            --bg-hover: #32383f;
+            --text-primary: #f0f2f5;
+            --text-secondary: #9ca3af;
+            --text-muted: #6b7280;
+            --accent-blue: #3b82f6;
+            --accent-blue-hover: #2563eb;
+            --status-green: #22c55e;
+            --status-green-bg: rgba(34, 197, 94, 0.15);
+            --status-yellow: #eab308;
+            --status-yellow-bg: rgba(234, 179, 8, 0.15);
+            --status-red: #ef4444;
+            --status-red-bg: rgba(239, 68, 68, 0.15);
+            --border-color: #374151;
+            --font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
+            --font-sans: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            --radius: 8px;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+            --gold: #fbbf24;
+            --silver: #94a3b8;
+            --bronze: #cd7c32;
+        }
+
+        /* ============================================ */
+        /* iOS SAFARI SPECIFIC FIXES */
+        /* ============================================ */
+
+        /* Support for iPhone safe areas (notch, home indicator) */
+        @supports (padding-top: env(safe-area-inset-top)) {
+            body {
+                padding-top: env(safe-area-inset-top);
+                padding-bottom: env(safe-area-inset-bottom);
+                padding-left: env(safe-area-inset-left);
+                padding-right: env(safe-area-inset-right);
+            }
+        }
+
+        /* Fix iOS Safari 100vh issue (address bar) */
+        @supports (-webkit-touch-callout: none) {
+            body {
+                /* iOS Safari */
+                min-height: -webkit-fill-available;
+            }
+        }
+
+        /* Prevent iOS text size adjustment */
+        html {
+            -webkit-text-size-adjust: 100%;
+            -moz-text-size-adjust: 100%;
+            -ms-text-size-adjust: 100%;
+            text-size-adjust: 100%;
+        }
+
+        /* Prevent iOS input zoom (Safari zooms if font-size < 16px) */
+        input[type="text"],
+        input[type="number"],
+        input[type="email"],
+        input[type="password"],
+        select,
+        textarea {
+            font-size: 16px !important;
+        }
+
+        /* iOS Safari tap highlight */
+        * {
+            -webkit-tap-highlight-color: rgba(59, 130, 246, 0.2);
+        }
+
+        /* Prevent iOS bounce on non-scrollable content */
+        .app-container {
+            overscroll-behavior-y: none;
+        }
+
+        /* Smooth scrolling for iOS */
+        * {
+            -webkit-overflow-scrolling: touch;
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Prevent double-tap zoom on iOS while allowing pinch zoom */
+        button, a, input, select, textarea {
+            touch-action: manipulation;
+        }
+
+        html {
+            font-size: 16px;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .app-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 24px;
+            /* iOS performance optimization */
+            transform: translateZ(0);
+            -webkit-transform: translateZ(0);
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .header-left::before {
+            content: '';
+            display: block;
+            width: 8px;
+            height: 32px;
+            background: var(--accent-blue);
+            border-radius: 2px;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .header-title-group {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+        }
+
+        .creator-credit {
+            font-size: 0.65rem;
+            color: #ef4444;
+            font-weight: 400;
+            letter-spacing: 0.05em;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .formula-display {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            background: var(--bg-input);
+            padding: 8px 14px;
+            border-radius: var(--radius);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            padding: 8px 14px;
+            border-radius: var(--radius);
+            font-size: 0.875rem;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.15s;
+            /* iOS button styling fix */
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        .btn:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        .btn-danger {
+            color: var(--status-red);
+            border-color: var(--status-red);
+        }
+
+        .btn-danger:hover {
+            background: var(--status-red-bg);
+        }
+
+        .instagram-btn {
+            background: linear-gradient(45deg, #f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%);
+            border: none;
+            color: white;
+            padding: 10px 18px;
+            border-radius: var(--radius);
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .instagram-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(188, 24, 136, 0.4);
+        }
+
+        .main-tabs {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 24px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .main-tab {
+            padding: 14px 24px;
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 0.9375rem;
+            font-weight: 500;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.15s;
+            position: relative;
+            white-space: nowrap;
+            border-radius: var(--radius) var(--radius) 0 0;
+        }
+
+        .main-tab:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        .main-tab.active {
+            background: var(--bg-card);
+            color: var(--text-primary);
+        }
+
+        .main-tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--accent-blue);
+        }
+
+        .main-tab .tab-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .add-mechanic-btn {
+            padding: 8px 16px;
+            margin-left: 8px;
+            background: transparent;
+            border: 1px dashed var(--border-color);
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .add-mechanic-btn:hover {
+            border-color: var(--accent-blue);
+            color: var(--accent-blue);
+            background: rgba(59, 130, 246, 0.1);
+        }
+
+        .tab-panel {
+            display: none;
+        }
+
+        .tab-panel.active {
+            display: block;
+        }
+
+        .mechanic-layout {
+            display: grid;
+            grid-template-columns: 380px 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 1024px) {
+            .mechanic-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .entry-panel {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            padding: 24px;
+            border: 1px solid var(--border-color);
+            height: fit-content;
+        }
+
+        .panel-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .mechanic-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 1rem;
+            color: white;
+        }
+
+        .panel-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+        }
+
+        .panel-subtitle {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .form-group select,
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 14px;
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            color: var(--text-primary);
+            font-size: 1rem;
+            font-family: inherit;
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 120px;
+            font-family: var(--font-mono);
+            font-size: 0.875rem;
+        }
+
+        .form-group select:focus,
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+        }
+
+        .form-group input[type="number"] {
+            font-family: var(--font-mono);
+        }
+
+        .form-group select option,
+        select option {
+            background: var(--bg-input);
+            color: var(--text-primary);
+        }
+
+        .form-group select option:hover,
+        select option:hover,
+        .form-group select option:checked,
+        select option:checked {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        .input-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .week-display {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        .calendar-picker {
+            position: relative;
+        }
+
+        .calendar-input {
+            width: 100%;
+            padding: 12px 14px;
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            color: var(--text-primary);
+            font-size: 1rem;
+            font-family: inherit;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .calendar-input:hover {
+            border-color: var(--accent-blue);
+        }
+
+        .calendar-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 16px;
+            margin-top: 4px;
+            z-index: 100;
+            box-shadow: var(--shadow);
+            display: none;
+        }
+
+        .calendar-dropdown.open {
+            display: block;
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .calendar-nav {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            width: 32px;
+            height: 32px;
+            border-radius: var(--radius);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+        }
+
+        .calendar-nav:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        .calendar-month-year {
+            font-weight: 600;
+            font-size: 0.9375rem;
+        }
+
+        .calendar-weekdays {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 2px;
+            margin-bottom: 8px;
+        }
+
+        .calendar-weekday {
+            text-align: center;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            padding: 4px;
+            font-weight: 600;
+        }
+
+        .calendar-weekday.work-day {
+            color: var(--accent-blue);
+        }
+
+        .calendar-days {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 2px;
+        }
+
+        .calendar-day {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.875rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.1s;
+            background: transparent;
+            border: none;
+            color: var(--text-primary);
+        }
+
+        .calendar-day:hover {
+            background: var(--bg-hover);
+        }
+
+        .calendar-day.other-month {
+            color: var(--text-muted);
+            opacity: 0.5;
+        }
+
+        .calendar-day.selected-week {
+            background: rgba(59, 130, 246, 0.2);
+        }
+
+        .calendar-day.selected-week.week-start {
+            border-radius: 4px 0 0 4px;
+        }
+
+        .calendar-day.selected-week.week-end {
+            border-radius: 0 4px 4px 0;
+        }
+
+        .calendar-day.today {
+            font-weight: 700;
+            color: var(--accent-blue);
+        }
+
+        .result-display {
+            margin-top: 24px;
+            padding: 20px;
+            border-radius: var(--radius);
+            text-align: center;
+            transition: all 0.2s;
+        }
+
+        .result-display.status-above {
+            background: var(--status-green-bg);
+            border: 1px solid var(--status-green);
+        }
+
+        .result-display.status-at {
+            background: var(--status-yellow-bg);
+            border: 1px solid var(--status-yellow);
+        }
+
+        .result-display.status-below {
+            background: var(--status-red-bg);
+            border: 1px solid var(--status-red);
+        }
+
+        .result-display.status-none {
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+        }
+
+        .efficiency-value {
+            font-family: var(--font-mono);
+            font-size: 3rem;
+            font-weight: 700;
+            line-height: 1;
+            margin-bottom: 8px;
+        }
+
+        .status-above .efficiency-value { color: var(--status-green); }
+        .status-at .efficiency-value { color: var(--status-yellow); }
+        .status-below .efficiency-value { color: var(--status-red); }
+        .status-none .efficiency-value { color: var(--text-muted); }
+
+        .status-label {
+            font-size: 0.875rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .status-above .status-label { color: var(--status-green); }
+        .status-at .status-label { color: var(--status-yellow); }
+        .status-below .status-label { color: var(--status-red); }
+        .status-none .status-label { color: var(--text-muted); }
+
+        .hourly-rate {
+            font-family: var(--font-mono);
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            margin-top: 12px;
+        }
+
+        .save-btn {
+            width: 100%;
+            padding: 14px;
+            background: var(--accent-blue);
+            color: white;
+            border: none;
+            border-radius: var(--radius);
+            font-size: 1rem;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: background 0.15s;
+            margin-top: 20px;
+        }
+
+        .save-btn:hover {
+            background: var(--accent-blue-hover);
+        }
+
+        .save-btn:disabled {
+            background: var(--bg-input);
+            color: var(--text-muted);
+            cursor: not-allowed;
+        }
+
+        .data-panel {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            border: 1px solid var(--border-color);
+            padding: 24px;
+        }
+
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        @media (max-width: 800px) {
+            .stats-row {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* ============================================ */
+        /* RESPONSIVE DESIGN FOR MOBILE & TABLET */
+        /* ============================================ */
+
+        /* Tablets (landscape) - 1024px and below */
+        @media (max-width: 1024px) {
+            .app-container {
+                padding: 16px;
+            }
+
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .header-right {
+                width: 100%;
+                flex-wrap: wrap;
+            }
+
+            .formula-display {
+                font-size: 0.7rem;
+                padding: 6px 10px;
+            }
+
+            .overview-grid {
+                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            }
+        }
+
+        /* Tablets (portrait) & Large phones - 768px and below */
+        @media (max-width: 768px) {
+            html {
+                font-size: 15px;
+            }
+
+            .app-container {
+                padding: 12px;
+            }
+
+            .header {
+                margin-bottom: 16px;
+                padding-bottom: 16px;
+            }
+
+            .header h1 {
+                font-size: 1.25rem;
+            }
+
+            .header-right {
+                gap: 8px;
+            }
+
+            .formula-display {
+                font-size: 0.65rem;
+                padding: 6px 8px;
+            }
+
+            .btn {
+                padding: 6px 12px;
+                font-size: 0.8rem;
+            }
+
+            /* Tabs - Make scrollable on mobile */
+            .main-tabs {
+                overflow-x: auto;
+                overflow-y: hidden;
+                -webkit-overflow-scrolling: touch;
+                scrollbar-width: none;
+                -ms-overflow-style: none;
+                flex-wrap: nowrap;
+            }
+
+            .main-tabs::-webkit-scrollbar {
+                display: none;
+            }
+
+            .main-tab {
+                padding: 10px 16px;
+                font-size: 0.875rem;
+                flex-shrink: 0;
+            }
+
+            .add-mechanic-btn {
+                padding: 6px 12px;
+                font-size: 0.8rem;
+                flex-shrink: 0;
+            }
+
+            /* Overview cards - Stack on mobile */
+            .overview-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+
+            .overview-card {
+                padding: 16px;
+            }
+
+            .stats-row {
+                gap: 12px;
+            }
+
+            /* Shop average card */
+            .shop-avg-card {
+                padding: 16px;
+            }
+
+            .shop-avg-title {
+                font-size: 1rem;
+            }
+
+            .shop-avg-value {
+                font-size: 1.5rem;
+            }
+
+            /* Chart adjustments */
+            .chart-container {
+                height: 280px;
+                padding: 15px;
+            }
+
+            .chart-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+
+            .chart-range-btns {
+                width: 100%;
+                justify-content: flex-start;
+            }
+
+            /* Entry panel adjustments */
+            .entry-panel {
+                padding: 16px;
+            }
+
+            .data-panel {
+                padding: 16px;
+            }
+
+            /* Leaderboard adjustments for tablets */
+            .leaderboard-section {
+                padding: 16px;
+            }
+
+            .leaderboard-table {
+                min-width: 500px;
+            }
+
+            /* Input rows - Stack on mobile */
+            .input-row {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+
+            /* Tables - Make scrollable */
+            .history-scroll-container {
+                max-height: 300px;
+            }
+
+            .history-table th,
+            .history-table td {
+                padding: 8px;
+                font-size: 0.8rem;
+            }
+
+            /* Modal adjustments */
+            .modal {
+                max-width: 90%;
+                padding: 20px;
+            }
+
+            /* Leaderboard tables */
+            .leaderboard-table th,
+            .leaderboard-table td {
+                padding: 8px;
+                font-size: 0.8rem;
+            }
+
+            /* Reports adjustments */
+            .month-stats {
+                grid-template-columns: 1fr;
+            }
+
+            /* Calendar picker adjustments */
+            .calendar-dropdown {
+                padding: 12px;
+            }
+        }
+
+        /* Mobile phones - 480px and below */
+        @media (max-width: 480px) {
+            html {
+                font-size: 14px;
+            }
+
+            .app-container {
+                padding: 8px;
+            }
+
+            .header {
+                margin-bottom: 12px;
+            }
+
+            .header h1 {
+                font-size: 1.1rem;
+            }
+
+            .creator-credit {
+                font-size: 0.6rem;
+            }
+
+            .header-right {
+                gap: 6px;
+            }
+
+            .formula-display {
+                display: none; /* Hide formula on very small screens */
+            }
+
+            #syncStatus {
+                padding: 6px 8px;
+                font-size: 0.7rem;
+            }
+
+            .btn {
+                padding: 6px 10px;
+                font-size: 0.75rem;
+            }
+
+            .instagram-btn {
+                padding: 8px 14px;
+                font-size: 0.8rem;
+            }
+
+            .main-tab {
+                padding: 8px 12px;
+                font-size: 0.8rem;
+            }
+
+            .add-mechanic-btn {
+                padding: 6px 10px;
+                font-size: 0.75rem;
+            }
+
+            /* Cards */
+            .overview-card,
+            .shop-avg-card,
+            .entry-panel,
+            .data-panel {
+                padding: 12px;
+            }
+
+            .overview-card-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            /* Stats */
+            .stats-row {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+
+            .stat-card {
+                padding: 12px;
+            }
+
+            .stat-label {
+                font-size: 0.7rem;
+            }
+
+            .stat-value {
+                font-size: 1.25rem;
+            }
+
+            /* Charts - Smaller on mobile */
+            .chart-container {
+                height: 240px;
+                padding: 10px;
+            }
+
+            .chart-title {
+                font-size: 0.8rem;
+            }
+
+            .range-btn {
+                padding: 4px 8px;
+                font-size: 0.7rem;
+            }
+
+            /* Efficiency display */
+            .efficiency-value {
+                font-size: 2rem;
+            }
+
+            .status-label {
+                font-size: 0.75rem;
+            }
+
+            .hourly-rate {
+                font-size: 0.75rem;
+            }
+
+            /* Buttons */
+            .save-btn {
+                padding: 12px;
+                font-size: 0.9rem;
+            }
+
+            /* Tables - More compact */
+            .history-table th,
+            .history-table td,
+            .leaderboard-table th,
+            .leaderboard-table td {
+                padding: 6px;
+                font-size: 0.75rem;
+            }
+
+            /* Hide some columns on very small screens */
+            .history-table th:nth-child(3),
+            .history-table td:nth-child(3) {
+                display: none; /* Hide Labor column */
+            }
+
+            /* Make leaderboard more compact on mobile */
+            .leaderboard-section {
+                padding: 12px;
+            }
+
+            .leaderboard-title {
+                font-size: 0.95rem;
+                margin-bottom: 12px;
+            }
+
+            /* Hide least important leaderboard columns on mobile */
+            .leaderboard-table th:nth-child(5),
+            .leaderboard-table td:nth-child(5),
+            .leaderboard-table th:nth-child(6),
+            .leaderboard-table td:nth-child(6) {
+                display: none; /* Hide "Current Streak" and "Longest Above Target" on tiny screens */
+            }
+
+            /* Reduce min-width on mobile */
+            .leaderboard-table {
+                min-width: 400px;
+            }
+
+            /* Modal adjustments */
+            .modal {
+                max-width: 95%;
+                padding: 16px;
+                max-height: 95vh;
+            }
+
+            .modal-title {
+                font-size: 1rem;
+            }
+
+            .pin-digit {
+                width: 40px;
+                height: 48px;
+                font-size: 1.25rem;
+            }
+
+            /* Calendar */
+            .calendar-dropdown {
+                padding: 10px;
+            }
+
+            .calendar-day {
+                font-size: 0.75rem;
+            }
+
+            .calendar-weekday {
+                font-size: 0.65rem;
+            }
+
+            /* Form elements - Larger for touch */
+            .form-group input,
+            .form-group select,
+            .form-group textarea {
+                padding: 10px 12px;
+                font-size: 0.95rem;
+            }
+
+            .calendar-input {
+                padding: 10px 12px;
+                font-size: 0.95rem;
+            }
+
+            /* Insights */
+            .insights-scroll-container {
+                max-height: 200px;
+            }
+
+            .insight-item {
+                padding: 10px;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 4px;
+            }
+
+            .insight-week {
+                font-size: 0.7rem;
+            }
+
+            .insight-text {
+                font-size: 0.8rem;
+            }
+
+            /* Rank badges */
+            .rank-badge {
+                min-width: 24px;
+                height: 24px;
+                font-size: 0.7rem;
+            }
+
+            /* Performance badges */
+            .perf-badge {
+                font-size: 0.65rem;
+                padding: 3px 8px;
+            }
+
+            /* Mechanic avatars */
+            .mechanic-avatar {
+                width: 32px;
+                height: 32px;
+                font-size: 0.9rem;
+            }
+
+            /* Action buttons in tables */
+            .entry-delete-btn,
+            .entry-edit-btn {
+                padding: 4px 8px;
+                font-size: 0.7rem;
+            }
+        }
+
+        /* Touch device improvements */
+        @media (hover: none) and (pointer: coarse) {
+            /* Larger tap targets for touch devices */
+            .btn,
+            .main-tab,
+            .range-btn,
+            .calendar-nav,
+            .calendar-day {
+                min-height: 44px;
+                min-width: 44px;
+            }
+
+            .main-tab {
+                padding: 12px 16px;
+            }
+
+            /* Reduce hover effects on touch devices */
+            .btn:hover,
+            .main-tab:hover,
+            .range-btn:hover {
+                transform: none;
+            }
+        }
+
+        /* Landscape phones - Optimize horizontal space */
+        @media (max-width: 768px) and (orientation: landscape) {
+            .mechanic-layout {
+                grid-template-columns: 1fr 1fr;
+                gap: 16px;
+            }
+
+            .chart-container {
+                height: 240px;
+            }
+        }
+
+        /* ============================================ */
+        /* IPHONE SPECIFIC OPTIMIZATIONS */
+        /* ============================================ */
+
+        /* iPhone SE (375px) and smaller */
+        @media only screen and (max-width: 375px) {
+            .header h1 {
+                font-size: 1rem;
+            }
+
+            .main-tab {
+                padding: 8px 10px;
+                font-size: 0.75rem;
+            }
+
+            .chart-container {
+                padding: 8px;
+            }
+        }
+
+        /* iPhone 12/13/14 Pro Max, Plus models (428px) */
+        @media only screen and (min-width: 414px) and (max-width: 430px) {
+            .overview-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* iPhone X, 11, 12, 13, 14, 15 - Notch handling */
+        @supports (padding-top: env(safe-area-inset-top)) {
+            .header {
+                padding-top: max(24px, env(safe-area-inset-top));
+            }
+
+            .app-container {
+                padding-bottom: max(24px, env(safe-area-inset-bottom));
+            }
+
+            @media (max-width: 480px) {
+                .app-container {
+                    padding-left: max(8px, env(safe-area-inset-left));
+                    padding-right: max(8px, env(safe-area-inset-right));
+                }
+            }
+        }
+
+        /* Fix for iPhone landscape notch */
+        @media only screen and (max-width: 896px) and (orientation: landscape) {
+            .app-container {
+                padding-left: max(16px, env(safe-area-inset-left));
+                padding-right: max(16px, env(safe-area-inset-right));
+            }
+
+            .header {
+                padding-top: max(12px, env(safe-area-inset-top));
+            }
+        }
+
+        /* iPhone Pro/Pro Max in landscape - optimize for notch */
+        @media only screen and (max-height: 430px) and (orientation: landscape) {
+            .header {
+                margin-bottom: 12px;
+                padding-bottom: 12px;
+            }
+
+            .chart-container {
+                height: 200px;
+            }
+
+            .modal {
+                max-height: 80vh;
+            }
+        }
+
+        .stat-card {
+            background: var(--bg-input);
+            padding: 16px;
+            border-radius: var(--radius);
+            border: 1px solid var(--border-color);
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 6px;
+        }
+
+        .stat-value {
+            font-family: var(--font-mono);
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .stat-value.green { color: var(--status-green); }
+        .stat-value.yellow { color: var(--status-yellow); }
+        .stat-value.red { color: var(--status-red); }
+
+        .chart-section {
+            margin-bottom: 24px;
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .chart-title {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .chart-range-btns {
+            display: flex;
+            gap: 8px;
+        }
+
+        .range-btn {
+            padding: 6px 12px;
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .range-btn:hover {
+            background: var(--bg-hover);
+        }
+
+        .range-btn.active {
+            background: var(--accent-blue);
+            border-color: var(--accent-blue);
+            color: white;
+        }
+
+        .chart-container {
+            background: var(--bg-input);
+            border-radius: var(--radius);
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            height: 320px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .chart-svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .insights-section {
+            margin-top: 24px;
+        }
+
+        .insights-title {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+
+        .insights-scroll-container {
+            max-height: 240px;
+            overflow-y: auto;
+            padding-right: 4px;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .insights-scroll-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .insights-scroll-container::-webkit-scrollbar-track {
+            background: var(--bg-input);
+            border-radius: 3px;
+        }
+
+        .insights-scroll-container::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 3px;
+        }
+
+        .insights-scroll-container::-webkit-scrollbar-thumb:hover {
+            background: var(--text-muted);
+        }
+
+        .insight-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px;
+            background: var(--bg-input);
+            border-radius: var(--radius);
+            margin-bottom: 8px;
+            border-left: 3px solid var(--border-color);
+        }
+
+        .insight-item.above {
+            border-left-color: var(--status-green);
+        }
+
+        .insight-item.below {
+            border-left-color: var(--status-red);
+        }
+
+        .insight-item.consistent {
+            border-left-color: var(--accent-blue);
+        }
+
+        .insight-week {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            min-width: 100px;
+        }
+
+        .insight-text {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-muted);
+        }
+
+        .no-data-icon {
+            font-size: 3rem;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        .history-section {
+            margin-top: 24px;
+        }
+
+        .history-scroll-container {
+            max-height: 400px;
+            overflow-y: auto;
+            overflow-x: auto;
+            border-radius: var(--radius);
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .history-scroll-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .history-scroll-container::-webkit-scrollbar-track {
+            background: var(--bg-input);
+            border-radius: 4px;
+        }
+
+        .history-scroll-container::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 4px;
+        }
+
+        .history-scroll-container::-webkit-scrollbar-thumb:hover {
+            background: var(--text-muted);
+        }
+
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .history-table th,
+        .history-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .history-table th {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            position: sticky;
+            top: 0;
+            background: var(--bg-card);
+            z-index: 1;
+        }
+
+        .history-table td {
+            font-family: var(--font-mono);
+            font-size: 0.875rem;
+        }
+
+        .history-table tr:hover td {
+            background: var(--bg-hover);
+        }
+
+        .entry-delete-btn, .entry-edit-btn {
+            background: var(--status-red-bg);
+            border: 1px solid var(--status-red);
+            color: var(--status-red);
+            cursor: pointer;
+            padding: 6px 12px;
+            border-radius: var(--radius);
+            font-size: 0.75rem;
+            font-weight: 500;
+            transition: all 0.15s;
+            margin-right: 4px;
+        }
+
+        .entry-edit-btn {
+            background: rgba(59, 130, 246, 0.15);
+            border-color: var(--accent-blue);
+            color: var(--accent-blue);
+        }
+
+        .entry-delete-btn:hover {
+            background: var(--status-red);
+            color: white;
+        }
+
+        .entry-edit-btn:hover {
+            background: var(--accent-blue);
+            color: white;
+        }
+
+        .overview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 24px;
+        }
+
+        .overview-card {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            border: 1px solid var(--border-color);
+            padding: 24px;
+            position: relative;
+        }
+
+        .overview-card-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .overview-card-header-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .mechanic-info {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .mechanic-name-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .overview-card-header h3 {
+            font-size: 1.125rem;
+            font-weight: 600;
+        }
+
+        .rank-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            font-family: var(--font-mono);
+        }
+
+        .rank-badge.rank-1 {
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            color: #1a1d23;
+            box-shadow: 0 2px 8px rgba(251, 191, 36, 0.4);
+        }
+
+        .rank-badge.rank-2 {
+            background: linear-gradient(135deg, #94a3b8 0%, #64748b 100%);
+            color: #1a1d23;
+            box-shadow: 0 2px 8px rgba(148, 163, 184, 0.4);
+        }
+
+        .rank-badge.rank-3 {
+            background: linear-gradient(135deg, #cd7c32 0%, #a86523 100%);
+            color: white;
+            box-shadow: 0 2px 8px rgba(205, 124, 50, 0.4);
+        }
+
+        .rank-badge.rank-4 {
+            background: var(--bg-input);
+            color: var(--text-muted);
+            border: 1px solid var(--border-color);
+        }
+
+        .performance-badges {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .perf-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+
+        .perf-badge.top-performer {
+            background: linear-gradient(135deg, rgba(34, 197, 94, 0.2) 0%, rgba(16, 185, 129, 0.2) 100%);
+            color: var(--status-green);
+            border: 1px solid rgba(34, 197, 94, 0.4);
+        }
+
+        .perf-badge.top-performer::before {
+            content: '';
+        }
+
+        .overview-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .overview-stat {
+            background: var(--bg-input);
+            padding: 12px;
+            border-radius: var(--radius);
+        }
+
+        .overview-stat-label {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .overview-stat-value {
+            font-family: var(--font-mono);
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-top: 4px;
+        }
+
+        .shop-avg-card {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            border: 1px solid var(--border-color);
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .shop-avg-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .shop-avg-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+        }
+
+        .shop-avg-value {
+            font-family: var(--font-mono);
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.2s;
+            /* iOS safe area for modal overlay */
+            padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+        }
+
+        .modal-overlay.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            padding: 24px;
+            width: 100%;
+            max-width: 400px;
+            border: 1px solid var(--border-color);
+            transform: translateY(20px);
+            transition: transform 0.2s;
+            max-height: 90vh;
+            overflow-y: auto;
+            /* iOS smooth scrolling in modals */
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .modal-overlay.visible .modal {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+        }
+
+        .modal-close {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.5rem;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .modal-close:hover {
+            color: var(--text-primary);
+        }
+
+        .color-options {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 8px;
+        }
+
+        .color-option {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .color-option:hover {
+            transform: scale(1.1);
+        }
+
+        .color-option.selected {
+            border-color: white;
+            box-shadow: 0 0 0 2px var(--bg-dark);
+        }
+
+        .pin-input-group {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .pin-digit {
+            width: 48px;
+            height: 56px;
+            text-align: center;
+            font-size: 1.5rem;
+            font-family: var(--font-mono);
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            color: var(--text-primary);
+        }
+
+        .pin-digit:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+        }
+
+        .pin-error {
+            color: var(--status-red);
+            font-size: 0.875rem;
+            text-align: center;
+            margin-top: 8px;
+            display: none;
+        }
+
+        .pin-error.visible {
+            display: block;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: var(--bg-card);
+            border: 1px solid var(--status-green);
+            color: var(--text-primary);
+            padding: 14px 20px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s;
+            z-index: 1000;
+            /* iOS safe area for toast */
+            bottom: max(24px, env(safe-area-inset-bottom));
+            right: max(24px, env(safe-area-inset-right));
+        }
+
+        .toast.visible {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .danger-zone {
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .danger-zone-title {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--status-red);
+            margin-bottom: 12px;
+        }
+
+        .chart-tooltip {
+            position: absolute;
+            background: var(--bg-card);
+            border: 1px solid var(--accent-blue);
+            border-radius: var(--radius);
+            padding: 8px 12px;
+            font-size: 0.75rem;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.15s;
+            z-index: 1000;
+            box-shadow: var(--shadow);
+        }
+
+        .chart-tooltip.visible {
+            opacity: 1;
+        }
+
+        .tooltip-label {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .tooltip-value {
+            font-family: var(--font-mono);
+            font-size: 0.875rem;
+            color: var(--accent-blue);
+        }
+
+        .reports-grid {
+            display: grid;
+            gap: 24px;
+        }
+
+        .month-card {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            border: 1px solid var(--border-color);
+            padding: 24px;
+        }
+
+        .month-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .month-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .month-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .leaderboard-section {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            border: 1px solid var(--border-color);
+            padding: 24px;
+            margin-bottom: 24px;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            position: relative;
+        }
+
+        /* Scroll indicator for mobile - subtle fade at right edge */
+        @media (max-width: 768px) {
+            .leaderboard-section::after {
+                content: '';
+                position: absolute;
+                top: 0;
+                right: 0;
+                width: 40px;
+                height: 100%;
+                background: linear-gradient(to right, transparent, var(--bg-card));
+                pointer-events: none;
+                border-radius: 0 var(--radius) var(--radius) 0;
+            }
+        }
+
+        .leaderboard-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        .leaderboard-table {
+            width: 100%;
+            min-width: 600px;
+            border-collapse: collapse;
+        }
+
+        .leaderboard-table th,
+        .leaderboard-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .leaderboard-table th {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .leaderboard-table td {
+            font-size: 0.875rem;
+        }
+
+        .streak-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        .streak-indicator.above {
+            background: var(--status-green-bg);
+            color: var(--status-green);
+        }
+
+        .streak-indicator.below {
+            background: var(--status-red-bg);
+            color: var(--status-red);
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <header class="header">
+            <div class="header-left">
+                <div class="header-title-group">
+                    <h1>Shop Efficiency Tracker</h1>
+                    <div class="creator-credit">CREATED BY ERICK PEARCE</div>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="formula-display">
+                    Efficiency = (Labor &divide; Hours) &divide; $<span id="rateDisplay">150</span> &times; 100
+                </div>
+                <div id="syncStatus" style="display: flex; align-items: center; gap: 6px; padding: 8px 12px; background: var(--bg-input); border-radius: var(--radius); border: 1px solid var(--border-color); font-size: 0.75rem;">
+                    <span id="syncDot" style="width: 8px; height: 8px; border-radius: 50%; background: var(--status-green);"></span>
+                    <span id="syncText" style="color: var(--text-secondary);">Synced</span>
+                </div>
+                <button class="btn" onclick="openSettings()">⚙️ Settings</button>
+            </div>
+        </header>
+
+        <div class="main-tabs" id="mainTabs">
+            <button class="main-tab active" data-tab="overview">Overview</button>
+            <button class="main-tab" data-tab="reports">Reports</button>
+        </div>
+
+        <div id="tabPanels">
+            <div class="tab-panel active" data-panel="overview" id="overviewPanel"></div>
+            <div class="tab-panel" data-panel="reports" id="reportsPanel"></div>
+        </div>
+    </div>
+
+    <!-- SETTINGS MODAL -->
+    <div class="modal-overlay" id="settingsModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">Settings</h3>
+                <button class="modal-close" onclick="closeSettings()">&times;</button>
+            </div>
+            <div class="form-group">
+                <label for="targetRate">100% Efficiency Rate ($/hr)</label>
+                <input type="number" id="targetRate" value="150" min="1">
+                <div class="week-display">At $150/hr: 40hrs &times; $75/hr actual = 50% efficiency</div>
+            </div>
+            <div class="form-group">
+                <label for="targetEfficiency">Target Efficiency (%)</label>
+                <input type="number" id="targetEfficiency" value="50" min="1" max="200">
+            </div>
+            <button class="save-btn" onclick="saveSettingsAndClose()">Save Settings</button>
+
+            <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border-color);">
+                <button class="btn" style="width: 100%; background: var(--accent-blue); color: white;" onclick="forceRefreshFromServer()">
+                    🔄 Refresh from Server
+                </button>
+                <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 8px; text-align: center;">
+                    Load latest data from server (use if data seems out of sync)
+                </p>
+            </div>
+
+            <div style="margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--border-color);">
+                <div style="display: flex; gap: 12px; margin-bottom: 12px;">
+                    <button class="btn" style="flex: 1;" onclick="exportData()">💼 Export JSON</button>
+                    <button class="btn" style="flex: 1;" onclick="openImportModal()">📥 Import JSON</button>
+                </div>
+                <a href="https://urldefense.com/v3/__https://www.instagram.com/erick.pearce/__;!!BOtMBrDv!ERXbzHcEdotSb4DnUJZrP49YFrEeXvU75664DObunfxCa1IwkptvQ3N5273Bf6QdJ92Rz2XSbbmqlHsrj_ky-xWnZK4$" target="_blank" class="instagram-btn" style="width: 100%; justify-content: center;">
+                    📸 Follow on Instagram
+                 [instagram.com]</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- IMPORT JSON MODAL -->
+    <div class="modal-overlay" id="importModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">Import JSON Data</h3>
+                <button class="modal-close" onclick="closeImportModal()">&times;</button>
+            </div>
+            <div class="form-group">
+                <label for="importData">Paste JSON data below:</label>
+                <textarea id="importData" placeholder='{"entries": [...], "mechanics": [...], "settings": {...}}'></textarea>
+            </div>
+            <button class="save-btn" onclick="importData()">Import Data</button>
+        </div>
+    </div>
+
+    <!-- ADD MECHANIC MODAL -->
+    <div class="modal-overlay" id="addMechanicModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">Add Mechanic</h3>
+                <button class="modal-close" onclick="closeAddMechanic()">&times;</button>
+            </div>
+            <div class="form-group">
+                <label for="newMechanicName">Name</label>
+                <input type="text" id="newMechanicName" placeholder="Enter mechanic name">
+            </div>
+            <div class="form-group">
+                <label>Color</label>
+                <div class="color-options" id="colorOptions"></div>
+            </div>
+            <button class="save-btn" onclick="saveMechanic()">Add Mechanic</button>
+        </div>
+    </div>
+
+    <!-- DELETE MECHANIC MODAL WITH PIN -->
+    <div class="modal-overlay" id="deleteConfirmModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">Delete Mechanic</h3>
+                <button class="modal-close" onclick="closeDeleteConfirm()">&times;</button>
+            </div>
+            <p style="color: var(--text-secondary); margin-bottom: 12px;">
+                Are you sure you want to delete <strong id="deleteMechanicName"></strong>? 
+                This will also delete all their efficiency entries.
+            </p>
+            <p style="color: var(--text-muted); font-size: 0.875rem; margin-bottom: 16px;">
+                Enter PIN to confirm deletion:
+            </p>
+            <div class="pin-input-group">
+                <input type="password" class="pin-digit" maxlength="1" data-pin="0" oninput="handlePinInput(this, 0)" onkeydown="handlePinKeydown(event, 0)">
+                <input type="password" class="pin-digit" maxlength="1" data-pin="1" oninput="handlePinInput(this, 1)" onkeydown="handlePinKeydown(event, 1)">
+                <input type="password" class="pin-digit" maxlength="1" data-pin="2" oninput="handlePinInput(this, 2)" onkeydown="handlePinKeydown(event, 2)">
+                <input type="password" class="pin-digit" maxlength="1" data-pin="3" oninput="handlePinInput(this, 3)" onkeydown="handlePinKeydown(event, 3)">
+            </div>
+            <div class="pin-error" id="pinError">Incorrect PIN. Please try again.</div>
+            <div style="display: flex; gap: 12px; margin-top: 20px;">
+                <button class="btn" style="flex: 1;" onclick="closeDeleteConfirm()">Cancel</button>
+                <button class="btn btn-danger" style="flex: 1;" onclick="confirmDeleteMechanic()">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SAVE ENTRY MODAL WITH PIN -->
+    <div class="modal-overlay" id="saveEntryModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">Save Entry</h3>
+                <button class="modal-close" onclick="closeSaveEntry()">&times;</button>
+            </div>
+            <p style="color: var(--text-secondary); margin-bottom: 12px;">
+                Save efficiency entry for <strong id="saveMechanicName"></strong>?
+            </p>
+            <p style="color: var(--text-muted); font-size: 0.875rem; margin-bottom: 16px;">
+                Enter PIN to confirm:
+            </p>
+            <div class="pin-input-group">
+                <input type="password" class="pin-digit" maxlength="1" data-pin-save="0" oninput="handleSavePinInput(this, 0)" onkeydown="handleSavePinKeydown(event, 0)">
+                <input type="password" class="pin-digit" maxlength="1" data-pin-save="1" oninput="handleSavePinInput(this, 1)" onkeydown="handleSavePinKeydown(event, 1)">
+                <input type="password" class="pin-digit" maxlength="1" data-pin-save="2" oninput="handleSavePinInput(this, 2)" onkeydown="handleSavePinKeydown(event, 2)">
+                <input type="password" class="pin-digit" maxlength="1" data-pin-save="3" oninput="handleSavePinInput(this, 3)" onkeydown="handleSavePinKeydown(event, 3)">
+            </div>
+            <div class="pin-error" id="pinSaveError">Incorrect PIN. Please try again.</div>
+            <div style="display: flex; gap: 12px; margin-top: 20px;">
+                <button class="btn" style="flex: 1;" onclick="closeSaveEntry()">Cancel</button>
+                <button class="btn btn-danger" style="flex: 1; background: var(--accent-blue); color: white;" onclick="confirmSaveEntry()">Save Entry</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- DELETE ENTRY MODAL WITH PIN -->
+    <div class="modal-overlay" id="deleteEntryModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">Delete Entry</h3>
+                <button class="modal-close" onclick="closeDeleteEntry()">&times;</button>
+            </div>
+            <p style="color: var(--text-secondary); margin-bottom: 12px;">
+                Are you sure you want to delete this entry for <strong id="deleteEntryWeek"></strong>?
+            </p>
+            <p style="color: var(--text-muted); font-size: 0.875rem; margin-bottom: 16px;">
+                Enter PIN to confirm deletion:
+            </p>
+            <div class="pin-input-group">
+                <input type="password" class="pin-digit" maxlength="1" data-pin-delete="0" oninput="handleDeletePinInput(this, 0)" onkeydown="handleDeletePinKeydown(event, 0)">
+                <input type="password" class="pin-digit" maxlength="1" data-pin-delete="1" oninput="handleDeletePinInput(this, 1)" onkeydown="handleDeletePinKeydown(event, 1)">
+                <input type="password" class="pin-digit" maxlength="1" data-pin-delete="2" oninput="handleDeletePinInput(this, 2)" onkeydown="handleDeletePinKeydown(event, 2)">
+                <input type="password" class="pin-digit" maxlength="1" data-pin-delete="3" oninput="handleDeletePinInput(this, 3)" onkeydown="handleDeletePinKeydown(event, 3)">
+            </div>
+            <div class="pin-error" id="pinDeleteError">Incorrect PIN. Please try again.</div>
+            <div style="display: flex; gap: 12px; margin-top: 20px;">
+                <button class="btn" style="flex: 1;" onclick="closeDeleteEntry()">Cancel</button>
+                <button class="btn btn-danger" style="flex: 1;" onclick="confirmDeleteEntry()">Delete Entry</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- EDIT ENTRY MODAL WITH PIN -->
+    <div class="modal-overlay" id="editEntryModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">Edit Entry</h3>
+                <button class="modal-close" onclick="closeEditEntry()">&times;</button>
+            </div>
+            <div class="form-group">
+                <label>Week</label>
+                <input type="text" id="editEntryWeek" readonly style="background: var(--bg-hover); cursor: not-allowed;">
+            </div>
+            <div class="input-row">
+                <div class="form-group">
+                    <label>Hours Worked</label>
+                    <input type="number" id="editEntryHours" min="0" max="100" step="0.5">
+                </div>
+                <div class="form-group">
+                    <label>Labor Generated ($)</label>
+                    <input type="number" id="editEntryLabor" min="0" step="1">
+                </div>
+            </div>
+            <p style="color: var(--text-muted); font-size: 0.875rem; margin-bottom: 16px;">
+                Enter PIN to confirm changes:
+            </p>
+            <div class="pin-input-group">
+                <input type="password" class="pin-digit" maxlength="1" data-pin-edit="0" oninput="handleEditPinInput(this, 0)" onkeydown="handleEditPinKeydown(event, 0)">
+                <input type="password" class="pin-digit" maxlength="1" data-pin-edit="1" oninput="handleEditPinInput(this, 1)" onkeydown="handleEditPinKeydown(event, 1)">
+                <input type="password" class="pin-digit" maxlength="1" data-pin-edit="2" oninput="handleEditPinInput(this, 2)" onkeydown="handleEditPinKeydown(event, 2)">
+                <input type="password" class="pin-digit" maxlength="1" data-pin-edit="3" oninput="handleEditPinInput(this, 3)" onkeydown="handleEditPinKeydown(event, 3)">
+            </div>
+            <div class="pin-error" id="pinEditError">Incorrect PIN. Please try again.</div>
+            <div style="display: flex; gap: 12px; margin-top: 20px;">
+                <button class="btn" style="flex: 1;" onclick="closeEditEntry()">Cancel</button>
+                <button class="btn" style="flex: 1; background: var(--accent-blue); color: white;" onclick="confirmEditEntry()">Update Entry</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast">Action completed</div>
+
+    <script>
+        const STORAGE_KEY = 'mechanic_efficiency_data';
+        const DELETE_PIN = '5454';
+        const SAVE_PIN = '5454';
+        const API_BASE = '/api';
+
+        const DEFAULT_COLORS = [
+            '#3b82f6', '#22c55e', '#eab308', '#ec4899', 
+            '#8b5cf6', '#f97316', '#06b6d4', '#ef4444',
+            '#84cc16', '#6366f1', '#14b8a6', '#f43f5e'
+        ];
+
+        const INITIAL_DATA = {"entries":[{"mechanicId":"david","weekStart":"2025-07-30","weekEnd":"2025-08-05","hoursWorked":41.85,"laborGenerated":3271.67,"efficiency":52.1,"hourlyRate":78.18,"createdAt":1722384000000,"id":"david_2025_07_30"},{"mechanicId":"darnell","weekStart":"2025-07-30","weekEnd":"2025-08-05","hoursWorked":23.5,"laborGenerated":3066.92,"efficiency":87.0,"hourlyRate":130.51,"createdAt":1722384000000,"id":"darnell_2025_07_30"},{"mechanicId":"will","weekStart":"2025-07-30","weekEnd":"2025-08-05","hoursWorked":36.97,"laborGenerated":3214.33,"efficiency":58.0,"hourlyRate":86.94,"createdAt":1722384000000,"id":"will_2025_07_30"},{"mechanicId":"david","weekStart":"2025-08-06","weekEnd":"2025-08-12","hoursWorked":43.03,"laborGenerated":2294.02,"efficiency":35.5,"hourlyRate":53.31,"createdAt":1722988800000,"id":"david_2025_08_06"},{"mechanicId":"darnell","weekStart":"2025-08-06","weekEnd":"2025-08-12","hoursWorked":37.98,"laborGenerated":2738.22,"efficiency":48.1,"hourlyRate":72.1,"createdAt":1722988800000,"id":"darnell_2025_08_06"},{"mechanicId":"will","weekStart":"2025-08-06","weekEnd":"2025-08-12","hoursWorked":25.98,"laborGenerated":1072.43,"efficiency":27.5,"hourlyRate":41.28,"createdAt":1722988800000,"id":"will_2025_08_06"},{"mechanicId":"david","weekStart":"2025-08-13","weekEnd":"2025-08-19","hoursWorked":33.62,"laborGenerated":3440.51,"efficiency":68.2,"hourlyRate":102.34,"createdAt":1723593600000,"id":"david_2025_08_13"},{"mechanicId":"darnell","weekStart":"2025-08-13","weekEnd":"2025-08-19","hoursWorked":46.78,"laborGenerated":2753.7,"efficiency":39.2,"hourlyRate":58.86,"createdAt":1723593600000,"id":"darnell_2025_08_13"},{"mechanicId":"will","weekStart":"2025-08-13","weekEnd":"2025-08-19","hoursWorked":44.6,"laborGenerated":3877.98,"efficiency":58.0,"hourlyRate":86.95,"createdAt":1723593600000,"id":"will_2025_08_13"},{"mechanicId":"david","weekStart":"2025-08-20","weekEnd":"2025-08-26","hoursWorked":44.88,"laborGenerated":2592.7,"efficiency":38.5,"hourlyRate":57.77,"createdAt":1724198400000,"id":"david_2025_08_20"},{"mechanicId":"darnell","weekStart":"2025-08-20","weekEnd":"2025-08-26","hoursWorked":39.22,"laborGenerated":1775.16,"efficiency":30.2,"hourlyRate":45.26,"createdAt":1724198400000,"id":"darnell_2025_08_20"},{"mechanicId":"will","weekStart":"2025-08-20","weekEnd":"2025-08-26","hoursWorked":40.92,"laborGenerated":3424.93,"efficiency":55.8,"hourlyRate":83.7,"createdAt":1724198400000,"id":"will_2025_08_20"},{"mechanicId":"david","weekStart":"2025-08-27","weekEnd":"2025-09-02","hoursWorked":41.25,"laborGenerated":1915.86,"efficiency":31.0,"hourlyRate":46.45,"createdAt":1724803200000,"id":"david_2025_08_27"},{"mechanicId":"darnell","weekStart":"2025-08-27","weekEnd":"2025-09-02","hoursWorked":41.03,"laborGenerated":2304,"efficiency":37.4,"hourlyRate":56.15,"createdAt":1724803200000,"id":"darnell_2025_08_27"},{"mechanicId":"will","weekStart":"2025-08-27","weekEnd":"2025-09-02","hoursWorked":45.3,"laborGenerated":3287.28,"efficiency":48.4,"hourlyRate":72.57,"createdAt":1724803200000,"id":"will_2025_08_27"},{"mechanicId":"david","weekStart":"2025-09-03","weekEnd":"2025-09-09","hoursWorked":37.02,"laborGenerated":2823.63,"efficiency":50.8,"hourlyRate":76.27,"createdAt":1725408000000,"id":"david_2025_09_03"},{"mechanicId":"darnell","weekStart":"2025-09-03","weekEnd":"2025-09-09","hoursWorked":39.85,"laborGenerated":2280.21,"efficiency":38.1,"hourlyRate":57.22,"createdAt":1725408000000,"id":"darnell_2025_09_03"},{"mechanicId":"will","weekStart":"2025-09-03","weekEnd":"2025-09-09","hoursWorked":42.67,"laborGenerated":4575.41,"efficiency":71.5,"hourlyRate":107.23,"createdAt":1725408000000,"id":"will_2025_09_03"},{"mechanicId":"xavier","weekStart":"2025-09-03","weekEnd":"2025-09-09","hoursWorked":40.78,"laborGenerated":1740.61,"efficiency":28.5,"hourlyRate":42.68,"createdAt":1725408000000,"id":"xavier_2025_09_03"},{"mechanicId":"david","weekStart":"2025-09-10","weekEnd":"2025-09-16","hoursWorked":38.82,"laborGenerated":1762.49,"efficiency":30.3,"hourlyRate":45.4,"createdAt":1726012800000,"id":"david_2025_09_10"},{"mechanicId":"darnell","weekStart":"2025-09-10","weekEnd":"2025-09-16","hoursWorked":37.47,"laborGenerated":1960.41,"efficiency":34.9,"hourlyRate":52.32,"createdAt":1726012800000,"id":"darnell_2025_09_10"},{"mechanicId":"will","weekStart":"2025-09-10","weekEnd":"2025-09-16","hoursWorked":41.18,"laborGenerated":1979.32,"efficiency":32.0,"hourlyRate":48.06,"createdAt":1726012800000,"id":"will_2025_09_10"},{"mechanicId":"xavier","weekStart":"2025-09-10","weekEnd":"2025-09-16","hoursWorked":41.63,"laborGenerated":1280.75,"efficiency":20.5,"hourlyRate":30.76,"createdAt":1726012800000,"id":"xavier_2025_09_10"},{"mechanicId":"david","weekStart":"2025-09-17","weekEnd":"2025-09-23","hoursWorked":38.12,"laborGenerated":2222.12,"efficiency":38.9,"hourlyRate":58.29,"createdAt":1726617600000,"id":"david_2025_09_17"},{"mechanicId":"darnell","weekStart":"2025-09-17","weekEnd":"2025-09-23","hoursWorked":41.2,"laborGenerated":1613.2,"efficiency":26.1,"hourlyRate":39.16,"createdAt":1726617600000,"id":"darnell_2025_09_17"},{"mechanicId":"will","weekStart":"2025-09-17","weekEnd":"2025-09-23","hoursWorked":41.08,"laborGenerated":3312.31,"efficiency":53.8,"hourlyRate":80.63,"createdAt":1726617600000,"id":"will_2025_09_17"},{"mechanicId":"xavier","weekStart":"2025-09-17","weekEnd":"2025-09-23","hoursWorked":41.12,"laborGenerated":1876.43,"efficiency":30.4,"hourlyRate":45.63,"createdAt":1726617600000,"id":"xavier_2025_09_17"},{"mechanicId":"david","weekStart":"2025-09-24","weekEnd":"2025-09-30","hoursWorked":34.1,"laborGenerated":3927.44,"efficiency":76.8,"hourlyRate":115.17,"createdAt":1727222400000,"id":"david_2025_09_24"},{"mechanicId":"darnell","weekStart":"2025-09-24","weekEnd":"2025-09-30","hoursWorked":40.47,"laborGenerated":1942.11,"efficiency":32.0,"hourlyRate":47.99,"createdAt":1727222400000,"id":"darnell_2025_09_24"},{"mechanicId":"will","weekStart":"2025-09-24","weekEnd":"2025-09-30","hoursWorked":39.73,"laborGenerated":4904.27,"efficiency":82.3,"hourlyRate":123.44,"createdAt":1727222400000,"id":"will_2025_09_24"},{"mechanicId":"xavier","weekStart":"2025-09-24","weekEnd":"2025-09-30","hoursWorked":40.55,"laborGenerated":1806.66,"efficiency":29.7,"hourlyRate":44.55,"createdAt":1727222400000,"id":"xavier_2025_09_24"},{"mechanicId":"david","weekStart":"2025-10-01","weekEnd":"2025-10-07","hoursWorked":33.75,"laborGenerated":1940.01,"efficiency":38.3,"hourlyRate":57.48,"createdAt":1767055299820,"id":"1767055299820"},{"mechanicId":"darnell","weekStart":"2025-10-01","weekEnd":"2025-10-07","hoursWorked":41.77,"laborGenerated":1489.7,"efficiency":23.8,"hourlyRate":35.66,"createdAt":1767056460931,"id":"1767056460931"},{"mechanicId":"will","weekStart":"2025-10-01","weekEnd":"2025-10-07","hoursWorked":42.74,"laborGenerated":3356.24,"efficiency":52.4,"hourlyRate":78.53,"createdAt":1767056739209,"id":"1767056739209"},{"mechanicId":"xavier","weekStart":"2025-10-01","weekEnd":"2025-10-07","hoursWorked":32.37,"laborGenerated":2667.39,"efficiency":54.9,"hourlyRate":82.4,"createdAt":1767056900984,"id":"1767056900984"},{"mechanicId":"david","weekStart":"2025-10-08","weekEnd":"2025-10-14","hoursWorked":40.13,"laborGenerated":1872.63,"efficiency":31.1,"hourlyRate":46.66,"createdAt":1767055315220,"id":"1767055315220"},{"mechanicId":"darnell","weekStart":"2025-10-08","weekEnd":"2025-10-14","hoursWorked":41.98,"laborGenerated":2807.74,"efficiency":44.6,"hourlyRate":66.88,"createdAt":1767056451899,"id":"1767056451899"},{"mechanicId":"will","weekStart":"2025-10-08","weekEnd":"2025-10-14","hoursWorked":41.17,"laborGenerated":3663.25,"efficiency":59.3,"hourlyRate":88.98,"createdAt":1767056729937,"id":"1767056729937"},{"mechanicId":"xavier","weekStart":"2025-10-08","weekEnd":"2025-10-14","hoursWorked":39.88,"laborGenerated":626.16,"efficiency":10.5,"hourlyRate":15.7,"createdAt":1767056886296,"id":"1767056886296"},{"mechanicId":"david","weekStart":"2025-10-15","weekEnd":"2025-10-21","hoursWorked":32.08,"laborGenerated":579.12,"efficiency":12,"hourlyRate":18.05,"createdAt":1767055330916,"id":"1767055330916"},{"mechanicId":"darnell","weekStart":"2025-10-15","weekEnd":"2025-10-21","hoursWorked":40.77,"laborGenerated":1296.88,"efficiency":21.2,"hourlyRate":31.81,"createdAt":1767056439667,"id":"1767056439668"},{"mechanicId":"will","weekStart":"2025-10-15","weekEnd":"2025-10-21","hoursWorked":42.43,"laborGenerated":5516.64,"efficiency":86.7,"hourlyRate":130.02,"createdAt":1767056713649,"id":"1767056713649"},{"mechanicId":"xavier","weekStart":"2025-10-15","weekEnd":"2025-10-21","hoursWorked":35.68,"laborGenerated":771.95,"efficiency":14.4,"hourlyRate":21.64,"createdAt":1767056868488,"id":"1767056868488"},{"mechanicId":"david","weekStart":"2025-10-22","weekEnd":"2025-10-28","hoursWorked":42.73,"laborGenerated":3268.67,"efficiency":51,"hourlyRate":76.5,"createdAt":1767055368212,"id":"1767055368212"},{"mechanicId":"darnell","weekStart":"2025-10-22","weekEnd":"2025-10-28","hoursWorked":40.77,"laborGenerated":1296.88,"efficiency":21.2,"hourlyRate":31.81,"createdAt":1767056418476,"id":"1767056418476"},{"mechanicId":"will","weekStart":"2025-10-22","weekEnd":"2025-10-28","hoursWorked":40,"laborGenerated":3106.3,"efficiency":51.8,"hourlyRate":77.66,"createdAt":1767056699841,"id":"1767056699841"},{"mechanicId":"xavier","weekStart":"2025-10-22","weekEnd":"2025-10-28","hoursWorked":39.2,"laborGenerated":2043.38,"efficiency":34.8,"hourlyRate":52.13,"createdAt":1767056851401,"id":"1767056851401"},{"mechanicId":"david","weekStart":"2025-10-29","weekEnd":"2025-11-04","hoursWorked":41.12,"laborGenerated":1894.94,"efficiency":30.7,"hourlyRate":46.08,"createdAt":1767055445419,"id":"1767055445419"},{"mechanicId":"darnell","weekStart":"2025-10-29","weekEnd":"2025-11-04","hoursWorked":41.65,"laborGenerated":3833.55,"efficiency":61.4,"hourlyRate":92.04,"createdAt":1767056406068,"id":"1767056406068"},{"mechanicId":"will","weekStart":"2025-10-29","weekEnd":"2025-11-04","hoursWorked":41,"laborGenerated":3827.47,"efficiency":62.2,"hourlyRate":93.35,"createdAt":1767056689297,"id":"1767056689297"},{"mechanicId":"xavier","weekStart":"2025-10-29","weekEnd":"2025-11-04","hoursWorked":38.25,"laborGenerated":1634.72,"efficiency":28.5,"hourlyRate":42.74,"createdAt":1767056837753,"id":"1767056837753"},{"mechanicId":"david","weekStart":"2025-11-05","weekEnd":"2025-11-11","hoursWorked":40.1,"laborGenerated":2518.95,"efficiency":41.9,"hourlyRate":62.82,"createdAt":1767055534738,"id":"1767055534738"},{"mechanicId":"darnell","weekStart":"2025-11-05","weekEnd":"2025-11-11","hoursWorked":39.68,"laborGenerated":877.94,"efficiency":14.8,"hourlyRate":22.13,"createdAt":1767056394691,"id":"1767056394691"},{"mechanicId":"will","weekStart":"2025-11-05","weekEnd":"2025-11-11","hoursWorked":41.92,"laborGenerated":3303.67,"efficiency":52.5,"hourlyRate":78.81,"createdAt":1767056680530,"id":"1767056680530"},{"mechanicId":"xavier","weekStart":"2025-11-05","weekEnd":"2025-11-11","hoursWorked":39.45,"laborGenerated":1131.48,"efficiency":19.1,"hourlyRate":28.68,"createdAt":1767056826889,"id":"1767056826889"},{"mechanicId":"david","weekStart":"2025-11-12","weekEnd":"2025-11-18","hoursWorked":41,"laborGenerated":3228.58,"efficiency":52.5,"hourlyRate":78.75,"createdAt":1767055584506,"id":"1767055584506"},{"mechanicId":"darnell","weekStart":"2025-11-12","weekEnd":"2025-11-18","hoursWorked":39.8,"laborGenerated":932.02,"efficiency":15.6,"hourlyRate":23.42,"createdAt":1767056377620,"id":"1767056377620"},{"mechanicId":"will","weekStart":"2025-11-12","weekEnd":"2025-11-18","hoursWorked":39.75,"laborGenerated":3212.04,"efficiency":53.9,"hourlyRate":80.81,"createdAt":1767056671610,"id":"1767056671610"},{"mechanicId":"xavier","weekStart":"2025-11-12","weekEnd":"2025-11-18","hoursWorked":37.35,"laborGenerated":3373.96,"efficiency":60.2,"hourlyRate":90.33,"createdAt":1767056814473,"id":"1767056814473"},{"mechanicId":"david","weekStart":"2025-11-19","weekEnd":"2025-11-25","hoursWorked":39.25,"laborGenerated":3387.82,"efficiency":57.5,"hourlyRate":86.31,"createdAt":1767056062278,"id":"1767056062278"},{"mechanicId":"darnell","weekStart":"2025-11-19","weekEnd":"2025-11-25","hoursWorked":40.03,"laborGenerated":3387.82,"efficiency":56.4,"hourlyRate":84.63,"createdAt":1767056364948,"id":"1767056364948"},{"mechanicId":"will","weekStart":"2025-11-19","weekEnd":"2025-11-25","hoursWorked":46.45,"laborGenerated":4885.91,"efficiency":70.1,"hourlyRate":105.19,"createdAt":1767056662338,"id":"1767056662338"},{"mechanicId":"xavier","weekStart":"2025-11-19","weekEnd":"2025-11-25","hoursWorked":41.58,"laborGenerated":2389.3,"efficiency":38.3,"hourlyRate":57.46,"createdAt":1767056804193,"id":"1767056804193"},{"mechanicId":"david","weekStart":"2025-11-26","weekEnd":"2025-12-02","hoursWorked":38.97,"laborGenerated":2747.35,"efficiency":47,"hourlyRate":70.5,"createdAt":1767056105454,"id":"1767056105454"},{"mechanicId":"darnell","weekStart":"2025-11-26","weekEnd":"2025-12-02","hoursWorked":39.28,"laborGenerated":1603.93,"efficiency":27.2,"hourlyRate":40.83,"createdAt":1767056349660,"id":"1767056349660"},{"mechanicId":"will","weekStart":"2025-11-26","weekEnd":"2025-12-02","hoursWorked":41.58,"laborGenerated":1998.05,"efficiency":32,"hourlyRate":48.05,"createdAt":1767056648889,"id":"1767056648889"},{"mechanicId":"xavier","weekStart":"2025-11-26","weekEnd":"2025-12-02","hoursWorked":35.67,"laborGenerated":1077.39,"efficiency":20.1,"hourlyRate":30.2,"createdAt":1767056790705,"id":"1767056790705"},{"mechanicId":"david","weekStart":"2025-12-03","weekEnd":"2025-12-09","hoursWorked":42.7,"laborGenerated":1154.25,"efficiency":18,"hourlyRate":27.03,"createdAt":1767056134542,"id":"1767056134542"},{"mechanicId":"darnell","weekStart":"2025-12-03","weekEnd":"2025-12-09","hoursWorked":39.73,"laborGenerated":2119.9,"efficiency":35.6,"hourlyRate":53.36,"createdAt":1767056327676,"id":"1767056327676"},{"mechanicId":"will","weekStart":"2025-12-03","weekEnd":"2025-12-09","hoursWorked":42.62,"laborGenerated":3500.18,"efficiency":54.8,"hourlyRate":82.13,"createdAt":1767056641314,"id":"1767056641314"},{"mechanicId":"xavier","weekStart":"2025-12-03","weekEnd":"2025-12-09","hoursWorked":36.23,"laborGenerated":2534.51,"efficiency":46.6,"hourlyRate":69.96,"createdAt":1767056779705,"id":"1767056779705"},{"mechanicId":"david","weekStart":"2025-12-10","weekEnd":"2025-12-16","hoursWorked":31.57,"laborGenerated":2783.95,"efficiency":58.8,"hourlyRate":88.18,"createdAt":1767056186709,"id":"1767056186709"},{"mechanicId":"darnell","weekStart":"2025-12-10","weekEnd":"2025-12-16","hoursWorked":39.02,"laborGenerated":1433.87,"efficiency":24.5,"hourlyRate":36.75,"createdAt":1767056317596,"id":"1767056317596"},{"mechanicId":"will","weekStart":"2025-12-10","weekEnd":"2025-12-16","hoursWorked":42.62,"laborGenerated":3500.18,"efficiency":54.8,"hourlyRate":82.13,"createdAt":1767056590002,"id":"1767056590002"},{"mechanicId":"xavier","weekStart":"2025-12-10","weekEnd":"2025-12-16","hoursWorked":39.52,"laborGenerated":2193.48,"efficiency":37,"hourlyRate":55.5,"createdAt":1767056770177,"id":"1767056770177"},{"mechanicId":"david","weekStart":"2025-12-17","weekEnd":"2025-12-23","hoursWorked":39.5,"laborGenerated":1821.28,"efficiency":30.7,"hourlyRate":46.11,"createdAt":1767056212892,"id":"1767056212892"},{"mechanicId":"darnell","weekStart":"2025-12-17","weekEnd":"2025-12-23","hoursWorked":39.83,"laborGenerated":1023.92,"efficiency":17.1,"hourlyRate":25.71,"createdAt":1767056287884,"id":"1767056287884"},{"mechanicId":"will","weekStart":"2025-12-17","weekEnd":"2025-12-23","hoursWorked":40.57,"laborGenerated":3005.66,"efficiency":49.4,"hourlyRate":74.09,"createdAt":1767056579426,"id":"1767056570986"},{"mechanicId":"xavier","weekStart":"2025-12-17","weekEnd":"2025-12-23","hoursWorked":39.53,"laborGenerated":1631.07,"efficiency":27.5,"hourlyRate":41.26,"createdAt":1767056760881,"id":"1767056760881"}],"mechanics":[{"id":"david","name":"David","color":"#3b82f6"},{"id":"darnell","name":"Darnell","color":"#22c55e"},{"id":"will","name":"Will","color":"#eab308"},{"id":"xavier","name":"Xavier","color":"#ec4899"}],"settings":{"targetRate":150,"targetEfficiency":50}};
+
+        // Cached data from server
+        let cachedData = null;
+        let isOnline = true;
+
+        let settings = {
+            targetRate: 150,
+            targetEfficiency: 50
+        };
+
+        let currentTab = 'overview';
+        let rangeByTab = { overview: '3m', comparisonChart: '3m' };
+        let selectedColor = DEFAULT_COLORS[0];
+        let mechanicToDelete = null;
+        let entryToDelete = null;
+        let selectedReportYear = new Date().getFullYear(); // Will be 2026
+        let selectedReportQuarter = Math.ceil((new Date().getMonth() + 1) / 3); // Will be 1 for January
+        let entryToSave = null;
+        let selectedComparisonMechanic = 'all'; // For mechanic filter on comparison chart
+        let entryToEdit = null;
+        let selectedWeeks = {};
+        let openCalendars = {};
+
+        // ============ API FUNCTIONS ============
+
+        async function fetchFromServer() {
+            try {
+                const response = await fetch(`${API_BASE}/data`);
+                if (!response.ok) throw new Error('Server error');
+                const data = await response.json();
+                cachedData = data;
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+                isOnline = true;
+                updateSyncStatus('synced');
+                return data;
+            } catch (error) {
+                console.warn('Failed to fetch from server, using local data:', error);
+                isOnline = false;
+                updateSyncStatus('offline');
+                return null;
+            }
+        }
+
+        async function syncToServer(data) {
+            updateSyncStatus('syncing');
+            try {
+                const response = await fetch(`${API_BASE}/data`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                if (!response.ok) throw new Error('Server sync failed');
+                isOnline = true;
+                updateSyncStatus('synced');
+                return true;
+            } catch (error) {
+                console.warn('Failed to sync to server:', error);
+                isOnline = false;
+                updateSyncStatus('offline');
+                return false;
+            }
+        }
+
+
+        // Note: Individual API endpoints removed - using POST /api/data for all operations via saveData()
+
+
+        function updateSyncStatus(status) {
+            const dot = document.getElementById('syncDot');
+            const text = document.getElementById('syncText');
+            if (!dot || !text) return;
+
+            switch(status) {
+                case 'syncing':
+                    dot.style.background = 'var(--status-yellow)';
+                    text.textContent = 'Syncing...';
+                    break;
+                case 'synced':
+                    dot.style.background = 'var(--status-green)';
+                    text.textContent = 'Synced';
+                    break;
+                case 'offline':
+                    dot.style.background = 'var(--status-red)';
+                    text.textContent = 'Offline';
+                    break;
+                case 'error':
+                    dot.style.background = 'var(--status-red)';
+                    text.textContent = 'Sync Error';
+                    break;
+            }
+        }
+
+        // Force refresh from server (for manual sync)
+        async function forceRefreshFromServer() {
+            console.log('🔄 Manually refreshing from server...');
+            updateSyncStatus('syncing');
+
+            try {
+                const response = await fetch(`${API_BASE}/data`);
+                if (!response.ok) throw new Error('Server returned error');
+
+                const data = await response.json();
+
+                // Update both storage locations
+                cachedData = data;
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+
+                // Reload the UI with fresh data
+                loadSettings();
+                renderAll();
+
+                updateSyncStatus('synced');
+                showToast('✅ Data refreshed from server!');
+                console.log('✅ Refresh successful - loaded', data.entries.length, 'entries');
+
+                // Close settings modal if it's open
+                const modal = document.getElementById('settingsModal');
+                if (modal) modal.classList.remove('visible');
+
+            } catch (error) {
+                console.error('❌ Refresh failed:', error);
+                updateSyncStatus('error');
+                showToast('❌ Failed to refresh - check your connection');
+            }
+        }
+
+        // ============ DATA FUNCTIONS (with API integration) ============
+
+        function loadData() {
+            // Priority 1: Use localStorage (which is updated from server on page load)
+            const stored = localStorage.getItem(STORAGE_KEY);
+            if (stored) {
+                try {
+                    const parsed = JSON.parse(stored);
+                    console.log('📦 Loaded data from localStorage');
+                    return parsed;
+                } catch (e) {
+                    console.error('Failed to parse stored data:', e);
+                }
+            }
+
+            // Priority 2: Use cachedData if localStorage fails
+            if (cachedData) {
+                console.log('💾 Using cached data');
+                return cachedData;
+            }
+
+            // Priority 3: Return INITIAL_DATA as last resort
+            console.log('🆕 Using initial data (fallback)');
+            return JSON.parse(JSON.stringify(INITIAL_DATA));
+        }
+
+        function saveData(data) {
+            cachedData = data;
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+            // Async sync to server (fire and forget for responsiveness)
+            syncToServer(data);
+        }
+
+        function getMechanics() {
+            return loadData().mechanics || [];
+        }
+
+        async function addMechanic(mechanic) {
+            const data = loadData();
+            data.mechanics.push(mechanic);
+            saveData(data);
+        }
+
+        async function deleteMechanic(mechanicId) {
+            const data = loadData();
+            data.mechanics = data.mechanics.filter(m => m.id !== mechanicId);
+            data.entries = data.entries.filter(e => e.mechanicId !== mechanicId);
+            saveData(data);
+        }
+
+        function getEntries() {
+            return loadData().entries || [];
+        }
+
+        async function addEntry(entry) {
+            const data = loadData();
+            const existingIdx = data.entries.findIndex(
+                e => e.mechanicId === entry.mechanicId && e.weekStart === entry.weekStart
+            );
+            if (existingIdx >= 0) {
+                data.entries[existingIdx] = { ...entry, id: data.entries[existingIdx].id };
+            } else {
+                entry.id = Date.now().toString();
+                data.entries.push(entry);
+            }
+            saveData(data);
+            return entry;
+        }
+
+        async function deleteEntry(id) {
+            const data = loadData();
+            data.entries = data.entries.filter(e => e.id !== id);
+            saveData(data);
+        }
+
+        async function updateEntry(id, updates) {
+            const data = loadData();
+            const idx = data.entries.findIndex(e => e.id === id);
+            if (idx >= 0) {
+                const result = calculateEfficiency(updates.hoursWorked, updates.laborGenerated);
+                data.entries[idx] = {
+                    ...data.entries[idx],
+                    hoursWorked: updates.hoursWorked,
+                    laborGenerated: updates.laborGenerated,
+                    efficiency: result.efficiency,
+                    hourlyRate: result.hourlyRate
+                };
+                saveData(data);
+            }
+        }
+
+        async function loadSettings() {
+            const data = loadData();
+            if (data.settings) {
+                settings = { ...settings, ...data.settings };
+            }
+            document.getElementById('targetRate').value = settings.targetRate;
+            document.getElementById('targetEfficiency').value = settings.targetEfficiency;
+            updateRateDisplay();
+        }
+
+        async function saveSettings() {
+            const data = loadData();
+            settings.targetRate = parseFloat(document.getElementById('targetRate').value) || 150;
+            settings.targetEfficiency = parseFloat(document.getElementById('targetEfficiency').value) || 50;
+            data.settings = settings;
+            saveData(data);
+            updateRateDisplay();
+        }
+
+        function updateRateDisplay() {
+            document.getElementById('rateDisplay').textContent = settings.targetRate;
+        }
+
+        function getWeekStart(date) {
+            const d = new Date(date);
+            const day = d.getDay();
+            const diff = (day < 3) ? (day + 4) : (day - 3);
+            d.setDate(d.getDate() - diff);
+            d.setHours(0, 0, 0, 0);
+            return d;
+        }
+
+        function getWeekEnd(weekStart) {
+            const d = new Date(weekStart);
+            d.setDate(d.getDate() + 6);
+            return d;
+        }
+
+        function formatDate(date) {
+            return date.toISOString().split('T')[0];
+        }
+
+        function formatDateShort(date) {
+            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        }
+
+        function formatDateFull(date) {
+            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        }
+
+        function getMonthName(date) {
+            return date.toLocaleDateString('en-US', { month: 'short' });
+        }
+
+        function getMonthYear(date) {
+            return date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+        }
+
+        function calculateEfficiency(hours, labor) {
+            if (!hours || hours <= 0) return null;
+            const hourlyRate = labor / hours;
+            const efficiency = (hourlyRate / settings.targetRate) * 100;
+            return {
+                efficiency: Math.round(efficiency * 10) / 10,
+                hourlyRate: Math.round(hourlyRate * 100) / 100
+            };
+        }
+
+        function getStatus(efficiency) {
+            if (efficiency === null) return 'none';
+            const target = settings.targetEfficiency;
+            const nearThreshold = target * 0.9;
+            if (efficiency >= target) return 'above';
+            if (efficiency >= nearThreshold) return 'at';
+            return 'below';
+        }
+
+        function getStatusLabel(status) {
+            const target = settings.targetEfficiency;
+            switch (status) {
+                case 'above': return `Above Target (${target}%)`;
+                case 'at': return `Near Target (${target}%)`;
+                case 'below': return `Below Target (${target}%)`;
+                default: return 'Enter data to calculate';
+            }
+        }
+
+        function getStatusColor(status) {
+            switch (status) {
+                case 'above': return 'green';
+                case 'at': return 'yellow';
+                case 'below': return 'red';
+                default: return '';
+            }
+        }
+
+        function calculateRankings(entries, mechanics) {
+            const rankings = {
+                latest: [],
+                longTerm: []
+            };
+
+            const now = new Date();
+            const oneMonthAgo = new Date(now);
+            oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
+
+            mechanics.forEach(m => {
+                const mechEntries = entries.filter(e => e.mechanicId === m.id)
+                    .sort((a, b) => new Date(b.weekStart) - new Date(a.weekStart));
+
+                const latestEntry = mechEntries[0];
+                const latestEff = latestEntry ? latestEntry.efficiency : null;
+
+                const oneMonthEntries = mechEntries.filter(e => new Date(e.weekStart) >= oneMonthAgo);
+                const oneMonthAvg = oneMonthEntries.length > 0
+                    ? oneMonthEntries.reduce((sum, e) => sum + e.efficiency, 0) / oneMonthEntries.length
+                    : null;
+
+                rankings.latest.push({ id: m.id, name: m.name, value: latestEff });
+                rankings.longTerm.push({ id: m.id, name: m.name, value: oneMonthAvg });
+            });
+
+            rankings.latest.sort((a, b) => (b.value || 0) - (a.value || 0));
+            rankings.longTerm.sort((a, b) => (b.value || 0) - (a.value || 0));
+
+            const latestRanks = {};
+            const longTermBest = rankings.longTerm[0]?.id;
+
+            rankings.latest.forEach((item, idx) => {
+                latestRanks[item.id] = idx + 1;
+            });
+
+            return { latestRanks, longTermBest };
+        }
+
+        function openSettings() {
+            document.getElementById('settingsModal').classList.add('visible');
+        }
+
+        function closeSettings() {
+            document.getElementById('settingsModal').classList.remove('visible');
+        }
+
+        function saveSettingsAndClose() {
+            saveSettings();
+            closeSettings();
+            renderAll();
+            showToast('Settings saved');
+        }
+
+        function openImportModal() {
+            document.getElementById('importData').value = '';
+            document.getElementById('importModal').classList.add('visible');
+        }
+
+        function closeImportModal() {
+            document.getElementById('importModal').classList.remove('visible');
+        }
+
+        async function importData() {
+            const jsonText = document.getElementById('importData').value.trim();
+            if (!jsonText) {
+                showToast('Please paste JSON data');
+                return;
+            }
+
+            try {
+                const data = JSON.parse(jsonText);
+                if (!data.entries || !data.mechanics) {
+                    showToast('Invalid JSON format');
+                    return;
+                }
+
+                cachedData = data;
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+
+                updateSyncStatus('syncing');
+                const synced = await syncToServer(data);
+
+                loadSettings();
+                closeImportModal();
+                renderAll();
+
+                if (synced) {
+                    showToast(`Imported ${data.entries.length} entries for ${data.mechanics.length} mechanics`);
+                } else {
+                    showToast(`Imported locally - server sync pending`);
+                }
+            } catch (e) {
+                showToast('Error parsing JSON: ' + e.message);
+            }
+        }
+
+        function exportData() {
+            const data = loadData();
+            const json = JSON.stringify(data, null, 2);
+            const blob = new Blob([json], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `shop-efficiency-${formatDate(new Date())}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function openAddMechanic() {
+            document.getElementById('newMechanicName').value = '';
+            renderColorOptions();
+            document.getElementById('addMechanicModal').classList.add('visible');
+        }
+
+        function closeAddMechanic() {
+            document.getElementById('addMechanicModal').classList.remove('visible');
+        }
+
+        function renderColorOptions() {
+            const container = document.getElementById('colorOptions');
+            const usedColors = getMechanics().map(m => m.color);
+
+            container.innerHTML = DEFAULT_COLORS.map(color => {
+                const isUsed = usedColors.includes(color);
+                const isSelected = color === selectedColor;
+                return `
+                    <div class="color-option ${isSelected ? 'selected' : ''}" 
+                         style="background: ${color}; ${isUsed ? 'opacity: 0.3; cursor: not-allowed;' : ''}"
+                         onclick="${isUsed ? '' : `selectColor('${color}')`}">
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function selectColor(color) {
+            selectedColor = color;
+            renderColorOptions();
+        }
+
+        function saveMechanic() {
+            const name = document.getElementById('newMechanicName').value.trim();
+            if (!name) {
+                showToast('Please enter a name');
+                return;
+            }
+
+            const id = name.toLowerCase().replace(/[^a-z0-9]/g, '_') + '_' + Date.now();
+            addMechanic({ id, name, color: selectedColor });
+
+            closeAddMechanic();
+            renderAll();
+            showToast(`${name} added`);
+        }
+
+        function openDeleteConfirm(mechanicId) {
+            const mechanics = getMechanics();
+            const mechanic = mechanics.find(m => m.id === mechanicId);
+            if (!mechanic) return;
+
+            mechanicToDelete = mechanicId;
+            document.getElementById('deleteMechanicName').textContent = mechanic.name;
+            document.getElementById('pinError').classList.remove('visible');
+
+            document.querySelectorAll('[data-pin]').forEach(input => {
+                input.value = '';
+            });
+
+            document.getElementById('deleteConfirmModal').classList.add('visible');
+
+            setTimeout(() => {
+                document.querySelector('[data-pin="0"]').focus();
+            }, 100);
+        }
+
+        function closeDeleteConfirm() {
+            document.getElementById('deleteConfirmModal').classList.remove('visible');
+            mechanicToDelete = null;
+        }
+
+        function handlePinInput(input, index) {
+            if (input.value.length === 1) {
+                if (index < 3) {
+                    document.querySelector(`[data-pin="${index + 1}"]`).focus();
+                } else {
+                    // All 4 digits entered, check if correct
+                    const enteredPin = getEnteredPin();
+                    if (enteredPin.length === 4) {
+                        if (enteredPin === DELETE_PIN) {
+                            confirmDeleteMechanic();
+                        } else {
+                            document.getElementById('pinError').classList.add('visible');
+                            document.querySelectorAll('[data-pin]').forEach(input => {
+                                input.value = '';
+                            });
+                            document.querySelector('[data-pin="0"]').focus();
+                        }
+                    }
+                }
+            }
+        }
+
+        function handlePinKeydown(event, index) {
+            if (event.key === 'Backspace' && !event.target.value && index > 0) {
+                document.querySelector(`[data-pin="${index - 1}"]`).focus();
+            }
+        }
+
+        function getEnteredPin() {
+            let pin = '';
+            document.querySelectorAll('[data-pin]').forEach(input => {
+                pin += input.value;
+            });
+            return pin;
+        }
+
+        function confirmDeleteMechanic() {
+            if (!mechanicToDelete) return;
+
+            const enteredPin = getEnteredPin();
+            if (enteredPin !== DELETE_PIN) {
+                document.getElementById('pinError').classList.add('visible');
+                document.querySelectorAll('[data-pin]').forEach(input => {
+                    input.value = '';
+                });
+                document.querySelector('[data-pin="0"]').focus();
+                return;
+            }
+
+            const mechanics = getMechanics();
+            const mechanic = mechanics.find(m => m.id === mechanicToDelete);
+            const name = mechanic ? mechanic.name : 'Mechanic';
+
+            deleteMechanic(mechanicToDelete);
+            closeDeleteConfirm();
+
+            if (currentTab === mechanicToDelete) {
+                currentTab = 'overview';
+            }
+
+            renderAll();
+            showToast(`${name} deleted`);
+        }
+
+        function handleSave(mechanicId) {
+            const weekStart = selectedWeeks[mechanicId];
+            const hours = parseFloat(document.getElementById(`hours-${mechanicId}`).value);
+            const labor = parseFloat(document.getElementById(`labor-${mechanicId}`).value);
+
+            if (!weekStart || !hours || !labor) return;
+
+            const result = calculateEfficiency(hours, labor);
+            const weekEnd = formatDate(getWeekEnd(new Date(weekStart + 'T00:00:00')));
+
+            const mechanics = getMechanics();
+            const mechanic = mechanics.find(m => m.id === mechanicId);
+
+            entryToSave = {
+                mechanicId,
+                weekStart,
+                weekEnd,
+                hoursWorked: hours,
+                laborGenerated: labor,
+                efficiency: result.efficiency,
+                hourlyRate: result.hourlyRate,
+                createdAt: Date.now()
+            };
+
+            document.getElementById('saveMechanicName').textContent = mechanic ? mechanic.name : 'mechanic';
+            document.getElementById('pinSaveError').classList.remove('visible');
+
+            document.querySelectorAll('[data-pin-save]').forEach(input => {
+                input.value = '';
+            });
+
+            document.getElementById('saveEntryModal').classList.add('visible');
+
+            setTimeout(() => {
+                document.querySelector('[data-pin-save="0"]').focus();
+            }, 100);
+        }
+
+        function closeSaveEntry() {
+            document.getElementById('saveEntryModal').classList.remove('visible');
+            entryToSave = null;
+        }
+
+        function handleSavePinInput(input, index) {
+            if (input.value.length === 1) {
+                if (index < 3) {
+                    document.querySelector(`[data-pin-save="${index + 1}"]`).focus();
+                } else {
+                    // All 4 digits entered, check if correct
+                    const enteredPin = getSavePin();
+                    if (enteredPin.length === 4) {
+                        if (enteredPin === SAVE_PIN) {
+                            confirmSaveEntry();
+                        } else {
+                            document.getElementById('pinSaveError').classList.add('visible');
+                            document.querySelectorAll('[data-pin-save]').forEach(input => {
+                                input.value = '';
+                            });
+                            document.querySelector('[data-pin-save="0"]').focus();
+                        }
+                    }
+                }
+            }
+        }
+
+        function handleSavePinKeydown(event, index) {
+            if (event.key === 'Backspace' && !event.target.value && index > 0) {
+                document.querySelector(`[data-pin-save="${index - 1}"]`).focus();
+            }
+        }
+
+        function getSavePin() {
+            let pin = '';
+            document.querySelectorAll('[data-pin-save]').forEach(input => {
+                pin += input.value;
+            });
+            return pin;
+        }
+
+        function confirmSaveEntry() {
+            if (!entryToSave) return;
+
+            const enteredPin = getSavePin();
+            if (enteredPin !== SAVE_PIN) {
+                document.getElementById('pinSaveError').classList.add('visible');
+                document.querySelectorAll('[data-pin-save]').forEach(input => {
+                    input.value = '';
+                });
+                document.querySelector('[data-pin-save="0"]').focus();
+                return;
+            }
+
+            const mechanics = getMechanics();
+            const mechanic = mechanics.find(m => m.id === entryToSave.mechanicId);
+
+            addEntry(entryToSave);
+            showToast(`Entry saved for ${mechanic ? mechanic.name : 'mechanic'}`);
+
+            document.getElementById(`hours-${entryToSave.mechanicId}`).value = '';
+            document.getElementById(`labor-${entryToSave.mechanicId}`).value = '';
+            updateResult(entryToSave.mechanicId);
+
+            closeSaveEntry();
+            renderAll();
+        }
+
+        function openDeleteEntry(entryId, weekLabel) {
+            entryToDelete = entryId;
+            document.getElementById('deleteEntryWeek').textContent = weekLabel;
+            document.getElementById('pinDeleteError').classList.remove('visible');
+
+            document.querySelectorAll('[data-pin-delete]').forEach(input => {
+                input.value = '';
+            });
+
+            document.getElementById('deleteEntryModal').classList.add('visible');
+
+            setTimeout(() => {
+                document.querySelector('[data-pin-delete="0"]').focus();
+            }, 100);
+        }
+
+        function closeDeleteEntry() {
+            document.getElementById('deleteEntryModal').classList.remove('visible');
+            entryToDelete = null;
+        }
+
+        function handleDeletePinInput(input, index) {
+            if (input.value.length === 1) {
+                if (index < 3) {
+                    document.querySelector(`[data-pin-delete="${index + 1}"]`).focus();
+                } else {
+                    // All 4 digits entered, check if correct
+                    const enteredPin = getDeletePin();
+                    if (enteredPin.length === 4) {
+                        if (enteredPin === DELETE_PIN) {
+                            confirmDeleteEntry();
+                        } else {
+                            document.getElementById('pinDeleteError').classList.add('visible');
+                            document.querySelectorAll('[data-pin-delete]').forEach(input => {
+                                input.value = '';
+                            });
+                            document.querySelector('[data-pin-delete="0"]').focus();
+                        }
+                    }
+                }
+            }
+        }
+
+        function handleDeletePinKeydown(event, index) {
+            if (event.key === 'Backspace' && !event.target.value && index > 0) {
+                document.querySelector(`[data-pin-delete="${index - 1}"]`).focus();
+            }
+        }
+
+        function getDeletePin() {
+            let pin = '';
+            document.querySelectorAll('[data-pin-delete]').forEach(input => {
+                pin += input.value;
+            });
+            return pin;
+        }
+
+        function confirmDeleteEntry() {
+            if (!entryToDelete) return;
+
+            const enteredPin = getDeletePin();
+            if (enteredPin !== DELETE_PIN) {
+                document.getElementById('pinDeleteError').classList.add('visible');
+                document.querySelectorAll('[data-pin-delete]').forEach(input => {
+                    input.value = '';
+                });
+                document.querySelector('[data-pin-delete="0"]').focus();
+                return;
+            }
+
+            deleteEntry(entryToDelete);
+            closeDeleteEntry();
+            renderAll();
+            showToast('Entry deleted');
+        }
+
+        function openEditEntry(entryId) {
+            const entries = getEntries();
+            const entry = entries.find(e => e.id === entryId);
+            if (!entry) return;
+
+            entryToEdit = entryId;
+
+            const weekStart = new Date(entry.weekStart + 'T00:00:00');
+            const weekEnd = new Date(entry.weekEnd + 'T00:00:00');
+            document.getElementById('editEntryWeek').value = `Week ending ${formatDateFull(weekEnd)}`;
+            document.getElementById('editEntryHours').value = entry.hoursWorked;
+            document.getElementById('editEntryLabor').value = entry.laborGenerated;
+
+            document.getElementById('pinEditError').classList.remove('visible');
+            document.querySelectorAll('[data-pin-edit]').forEach(input => {
+                input.value = '';
+            });
+
+            document.getElementById('editEntryModal').classList.add('visible');
+
+            setTimeout(() => {
+                document.querySelector('[data-pin-edit="0"]').focus();
+            }, 100);
+        }
+
+        function closeEditEntry() {
+            document.getElementById('editEntryModal').classList.remove('visible');
+            entryToEdit = null;
+        }
+
+        function handleEditPinInput(input, index) {
+            if (input.value.length === 1) {
+                if (index < 3) {
+                    document.querySelector(`[data-pin-edit="${index + 1}"]`).focus();
+                } else {
+                    // All 4 digits entered, check if correct
+                    const enteredPin = getEditPin();
+                    if (enteredPin.length === 4) {
+                        if (enteredPin === SAVE_PIN) {
+                            confirmEditEntry();
+                        } else {
+                            document.getElementById('pinEditError').classList.add('visible');
+                            document.querySelectorAll('[data-pin-edit]').forEach(input => {
+                                input.value = '';
+                            });
+                            document.querySelector('[data-pin-edit="0"]').focus();
+                        }
+                    }
+                }
+            }
+        }
+
+        function handleEditPinKeydown(event, index) {
+            if (event.key === 'Backspace' && !event.target.value && index > 0) {
+                document.querySelector(`[data-pin-edit="${index - 1}"]`).focus();
+            }
+        }
+
+        function getEditPin() {
+            let pin = '';
+            document.querySelectorAll('[data-pin-edit]').forEach(input => {
+                pin += input.value;
+            });
+            return pin;
+        }
+
+        function confirmEditEntry() {
+            if (!entryToEdit) return;
+
+            const enteredPin = getEditPin();
+            if (enteredPin !== SAVE_PIN) {
+                document.getElementById('pinEditError').classList.add('visible');
+                document.querySelectorAll('[data-pin-edit]').forEach(input => {
+                    input.value = '';
+                });
+                document.querySelector('[data-pin-edit="0"]').focus();
+                return;
+            }
+
+            const hours = parseFloat(document.getElementById('editEntryHours').value);
+            const labor = parseFloat(document.getElementById('editEntryLabor').value);
+
+            if (!hours || !labor) {
+                showToast('Please enter valid values');
+                return;
+            }
+
+            updateEntry(entryToEdit, {
+                hoursWorked: hours,
+                laborGenerated: labor
+            });
+
+            closeEditEntry();
+            renderAll();
+            showToast('Entry updated');
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('visible');
+            setTimeout(() => toast.classList.remove('visible'), 3000);
+        }
+
+        function initTabs() {
+            renderTabs();
+        }
+
+        function renderTabs() {
+            const tabsContainer = document.getElementById('mainTabs');
+            const panelsContainer = document.getElementById('tabPanels');
+            const mechanics = getMechanics();
+
+            let tabsHtml = `
+                <button class="main-tab ${currentTab === 'overview' ? 'active' : ''}" data-tab="overview">Overview</button>
+                <button class="main-tab ${currentTab === 'reports' ? 'active' : ''}" data-tab="reports">Reports</button>
+            `;
+
+            mechanics.forEach(m => {
+                tabsHtml += `
+                    <button class="main-tab ${currentTab === m.id ? 'active' : ''}" data-tab="${m.id}">
+                        <span class="tab-indicator" style="background: ${m.color}"></span>${m.name}
+                    </button>
+                `;
+            });
+
+            tabsHtml += '<button class="add-mechanic-btn" onclick="openAddMechanic()">+ Add Mechanic</button>';
+            tabsContainer.innerHTML = tabsHtml;
+
+            let panelsHtml = `
+                <div class="tab-panel ${currentTab === 'overview' ? 'active' : ''}" data-panel="overview" id="overviewPanel"></div>
+                <div class="tab-panel ${currentTab === 'reports' ? 'active' : ''}" data-panel="reports" id="reportsPanel"></div>
+            `;
+
+            mechanics.forEach(m => {
+                panelsHtml += `<div class="tab-panel ${currentTab === m.id ? 'active' : ''}" data-panel="${m.id}" id="${m.id}Panel"></div>`;
+            });
+
+            panelsContainer.innerHTML = panelsHtml;
+
+            document.querySelectorAll('.main-tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    document.querySelectorAll('.main-tab').forEach(t => t.classList.remove('active'));
+                    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+
+                    tab.classList.add('active');
+                    currentTab = tab.dataset.tab;
+                    const panel = document.querySelector(`[data-panel="${currentTab}"]`);
+                    if (panel) panel.classList.add('active');
+
+                    requestAnimationFrame(() => {
+                        if (currentTab === 'overview') {
+                            const entries = getEntries();
+                            if (entries.length > 0) {
+                                renderShopAvgChart();
+                                renderComparisonChart();
+                            }
+                        } else if (currentTab === 'reports') {
+                            renderReportsPanel();
+                        } else {
+                            const entries = getEntries();
+                            const mechEntries = entries.filter(e => e.mechanicId === currentTab);
+                            if (mechEntries.length > 0) {
+                                renderMechanicChart(currentTab);
+                            }
+                        }
+                    });
+                });
+            });
+        }
+
+        function toggleCalendar(mechanicId) {
+            const dropdown = document.getElementById(`calendar-dropdown-${mechanicId}`);
+            const isOpen = dropdown.classList.contains('open');
+
+            document.querySelectorAll('.calendar-dropdown').forEach(d => d.classList.remove('open'));
+
+            if (!isOpen) {
+                dropdown.classList.add('open');
+                if (!openCalendars[mechanicId]) {
+                    openCalendars[mechanicId] = new Date();
+                }
+                renderCalendar(mechanicId);
+            }
+        }
+
+        function renderCalendar(mechanicId) {
+            const container = document.getElementById(`calendar-days-${mechanicId}`);
+            const monthYearEl = document.getElementById(`calendar-month-year-${mechanicId}`);
+
+            const viewDate = openCalendars[mechanicId] || new Date();
+            const year = viewDate.getFullYear();
+            const month = viewDate.getMonth();
+
+            monthYearEl.textContent = viewDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+
+            const firstDay = new Date(year, month, 1);
+            const lastDay = new Date(year, month + 1, 0);
+            const startDay = firstDay.getDay();
+            const totalDays = lastDay.getDate();
+
+            const selectedWeek = selectedWeeks[mechanicId];
+            const selectedStart = selectedWeek ? new Date(selectedWeek + 'T00:00:00') : null;
+            const selectedEnd = selectedStart ? getWeekEnd(selectedStart) : null;
+
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            let html = '';
+
+            const prevMonth = new Date(year, month, 0);
+            const prevMonthDays = prevMonth.getDate();
+            for (let i = startDay - 1; i >= 0; i--) {
+                const day = prevMonthDays - i;
+                const date = new Date(year, month - 1, day);
+                const classes = getCalendarDayClasses(date, selectedStart, selectedEnd, today, true);
+                html += `<button class="calendar-day ${classes}" onclick="selectCalendarDay('${mechanicId}', ${year}, ${month - 1}, ${day})">${day}</button>`;
+            }
+
+            for (let day = 1; day <= totalDays; day++) {
+                const date = new Date(year, month, day);
+                const classes = getCalendarDayClasses(date, selectedStart, selectedEnd, today, false);
+                html += `<button class="calendar-day ${classes}" onclick="selectCalendarDay('${mechanicId}', ${year}, ${month}, ${day})">${day}</button>`;
+            }
+
+            const totalCells = Math.ceil((startDay + totalDays) / 7) * 7;
+            const nextDays = totalCells - (startDay + totalDays);
+            for (let day = 1; day <= nextDays; day++) {
+                const date = new Date(year, month + 1, day);
+                const classes = getCalendarDayClasses(date, selectedStart, selectedEnd, today, true);
+                html += `<button class="calendar-day ${classes}" onclick="selectCalendarDay('${mechanicId}', ${year}, ${month + 1}, ${day})">${day}</button>`;
+            }
+
+            container.innerHTML = html;
+        }
+
+        function getCalendarDayClasses(date, selectedStart, selectedEnd, today, isOtherMonth) {
+            let classes = [];
+
+            if (isOtherMonth) classes.push('other-month');
+
+            if (date.getTime() === today.getTime()) classes.push('today');
+
+            if (selectedStart && selectedEnd) {
+                if (date >= selectedStart && date <= selectedEnd) {
+                    classes.push('selected-week');
+                    if (date.getTime() === selectedStart.getTime()) classes.push('week-start');
+                    if (date.getTime() === selectedEnd.getTime()) classes.push('week-end');
+                }
+            }
+
+            return classes.join(' ');
+        }
+
+        function selectCalendarDay(mechanicId, year, month, day) {
+            const date = new Date(year, month, day);
+            const weekStart = getWeekStart(date);
+            selectedWeeks[mechanicId] = formatDate(weekStart);
+
+            const weekEnd = getWeekEnd(weekStart);
+            document.getElementById(`week-input-${mechanicId}`).textContent = 
+                `Week ending ${formatDateFull(weekEnd)}`;
+
+            document.getElementById(`calendar-dropdown-${mechanicId}`).classList.remove('open');
+
+            updateWeekDisplay(mechanicId);
+        }
+
+        function navigateCalendar(mechanicId, delta) {
+            const viewDate = openCalendars[mechanicId] || new Date();
+            viewDate.setMonth(viewDate.getMonth() + delta);
+            openCalendars[mechanicId] = viewDate;
+            renderCalendar(mechanicId);
+        }
+
+        function renderAll() {
+            renderTabs();
+            renderOverviewPanel();
+            renderReportsPanel();
+            getMechanics().forEach(m => renderMechanicPanel(m.id));
+        }
+
+        function renderOverviewPanel() {
+            const container = document.getElementById('overviewPanel');
+            if (!container) return;
+
+            const entries = getEntries();
+            const mechanics = getMechanics();
+            const currentRange = rangeByTab['overview'] || '3m';
+            const rangeWeeks = getRangeWeeks(currentRange);
+
+            const rangeEntries = entries.filter(e => new Date(e.weekStart) >= rangeWeeks.start);
+            const shopAvgEfficiency = rangeEntries.length > 0
+                ? Math.round(rangeEntries.reduce((sum, e) => sum + e.efficiency, 0) / rangeEntries.length * 10) / 10
+                : null;
+            const shopAvgStatus = shopAvgEfficiency !== null ? getStatus(shopAvgEfficiency) : 'none';
+
+            const { latestRanks, longTermBest } = calculateRankings(entries, mechanics);
+
+            let html = `
+                <div class="shop-avg-card">
+                    <div class="shop-avg-header">
+                        <div>
+                            <div class="shop-avg-title">Shop Average Efficiency</div>
+                            <div style="font-size: 0.75rem; color: var(--text-muted);">${
+                                currentRange === '1m' ? 'Last month' : 
+                                currentRange === '3m' ? 'Last 3 months' : 
+                                currentRange === '6m' ? 'Last 6 months' :
+                                currentRange === 'cq' ? 'Current Quarter' :
+                                currentRange === 'pq' ? 'Previous Quarter' : 'Last 3 months'
+                            }</div>
+                        </div>
+                        <div class="shop-avg-value ${getStatusColor(shopAvgStatus)}">
+                            ${shopAvgEfficiency !== null ? shopAvgEfficiency + '%' : '&ndash;'}
+                        </div>
+                    </div>
+                    <div class="chart-section" style="margin-bottom: 0;">
+                        <div class="chart-header">
+                            <div class="chart-title">Shop Average Trend by Work Week</div>
+                            <div class="chart-range-btns">
+                                <button class="range-btn ${currentRange === '1m' ? 'active' : ''}" onclick="setOverviewRange('1m')">1M</button>
+                                <button class="range-btn ${currentRange === '3m' ? 'active' : ''}" onclick="setOverviewRange('3m')">3M</button>
+                                <button class="range-btn ${currentRange === '6m' ? 'active' : ''}" onclick="setOverviewRange('6m')">6M</button>
+                                <button class="range-btn ${currentRange === 'pq' ? 'active' : ''}" onclick="setOverviewRange('pq')">PQ</button>
+                                <button class="range-btn ${currentRange === 'cq' ? 'active' : ''}" onclick="setOverviewRange('cq')">CQ</button>
+                            </div>
+                        </div>
+                        <div class="chart-container" id="shopAvgChart"></div>
+                    </div>
+                </div>
+
+                <div class="shop-avg-card">
+                    <div class="chart-section" style="margin-bottom: 0;">
+                        <div class="chart-header">
+                            <div style="display: flex; align-items: center; gap: 16px; flex-wrap: wrap; flex: 1;">
+                                <div class="chart-title">Mechanic Comparison - Efficiency Trends</div>
+                                <select onchange="setComparisonMechanic(this.value)" style="padding: 6px 12px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius); color: var(--text-primary); font-size: 0.875rem; min-width: 120px;">
+                                    <option value="all" ${selectedComparisonMechanic === 'all' ? 'selected' : ''}>All Mechanics</option>
+                                    ${mechanics.map(m => `<option value="${m.id}" ${selectedComparisonMechanic === m.id ? 'selected' : ''}>${m.name}</option>`).join('')}
+                                </select>
+                            </div>
+                            <div class="chart-range-btns">
+                                <button class="range-btn ${(rangeByTab['comparisonChart'] || '3m') === '1m' ? 'active' : ''}" onclick="setComparisonRange('1m')">1M</button>
+                                <button class="range-btn ${(rangeByTab['comparisonChart'] || '3m') === '3m' ? 'active' : ''}" onclick="setComparisonRange('3m')">3M</button>
+                                <button class="range-btn ${(rangeByTab['comparisonChart'] || '3m') === '6m' ? 'active' : ''}" onclick="setComparisonRange('6m')">6M</button>
+                                <button class="range-btn ${(rangeByTab['comparisonChart'] || '3m') === 'pq' ? 'active' : ''}" onclick="setComparisonRange('pq')">PQ</button>
+                                <button class="range-btn ${(rangeByTab['comparisonChart'] || '3m') === 'cq' ? 'active' : ''}" onclick="setComparisonRange('cq')">CQ</button>
+                            </div>
+                        </div>
+                        <div class="chart-container" id="comparisonChart"></div>
+                    </div>
+                </div>
+
+                <div class="overview-grid">
+            `;
+
+            // Sort mechanics by rank before rendering
+            const sortedMechanics = [...mechanics].map(mechanic => {
+                const rank = latestRanks[mechanic.id] || mechanics.length;
+                return { ...mechanic, rank };
+            }).sort((a, b) => a.rank - b.rank);
+
+            sortedMechanics.forEach(mechanic => {
+                const mechEntries = entries.filter(e => e.mechanicId === mechanic.id)
+                    .sort((a, b) => new Date(b.weekStart) - new Date(a.weekStart));
+
+                const avgEfficiency = mechEntries.length > 0 
+                    ? Math.round(mechEntries.reduce((sum, e) => sum + e.efficiency, 0) / mechEntries.length * 10) / 10
+                    : null;
+
+                const mechRangeEntries = mechEntries.filter(e => new Date(e.weekStart) >= rangeWeeks.start);
+                const rangeAvg = mechRangeEntries.length > 0
+                    ? Math.round(mechRangeEntries.reduce((sum, e) => sum + e.efficiency, 0) / mechRangeEntries.length * 10) / 10
+                    : null;
+
+                const totalWeeks = mechEntries.length;
+                const latest = mechEntries[0];
+
+                const avgStatus = avgEfficiency !== null ? getStatus(avgEfficiency) : 'none';
+                const rangeStatus = rangeAvg !== null ? getStatus(rangeAvg) : 'none';
+
+                const rank = latestRanks[mechanic.id] || mechanics.length;
+                const isLongTermBest = longTermBest === mechanic.id;
+
+                html += `
+                    <div class="overview-card">
+                        <div class="overview-card-header">
+                            <div class="overview-card-header-left">
+                                <div class="mechanic-avatar" style="background: ${mechanic.color}">${mechanic.name[0]}</div>
+                                <div class="mechanic-info">
+                                    <div class="mechanic-name-row">
+                                        <h3>${mechanic.name}</h3>
+                                        <span class="rank-badge rank-${rank}">#${rank}</span>
+                                    </div>
+                                    <div class="performance-badges">
+                                        ${isLongTermBest ? '<span class="perf-badge top-performer">⭐ Top 1M Performer</span>' : ''}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="overview-stats">
+                            <div class="overview-stat">
+                                <div class="overview-stat-label">Avg Efficiency</div>
+                                <div class="overview-stat-value ${getStatusColor(avgStatus)}">
+                                    ${avgEfficiency !== null ? avgEfficiency + '%' : '&ndash;'}
+                                </div>
+                            </div>
+                            <div class="overview-stat">
+                                <div class="overview-stat-label">${currentRange.toUpperCase()} Avg</div>
+                                <div class="overview-stat-value ${getStatusColor(rangeStatus)}">
+                                    ${rangeAvg !== null ? rangeAvg + '%' : '&ndash;'}
+                                </div>
+                            </div>
+                            <div class="overview-stat">
+                                <div class="overview-stat-label">Total Weeks</div>
+                                <div class="overview-stat-value">${totalWeeks}</div>
+                            </div>
+                            <div class="overview-stat">
+                                <div class="overview-stat-label">Last Entry</div>
+                                <div class="overview-stat-value" style="font-size: 0.9rem;">
+                                    ${latest ? formatDateShort(new Date(latest.weekEnd + 'T00:00:00')) : '&ndash;'}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += '</div>';
+
+            // Add version number at bottom
+            html += '<div style="text-align: center; margin-top: 24px; padding: 12px;"><span style="font-size: 0.7rem; color: #ef4444; font-family: var(--font-mono);">V7.12</span></div>';
+
+            container.innerHTML = html;
+
+            if (entries.length > 0) {
+                requestAnimationFrame(() => {
+                    renderShopAvgChart();
+                    renderComparisonChart();
+                });
+            }
+        }
+
+        function setComparisonRange(range) {
+            rangeByTab['comparisonChart'] = range;
+
+            // Update button visual states immediately
+            const comparisonCard = document.querySelector('#overviewPanel .shop-avg-card:nth-of-type(2)');
+            if (comparisonCard) {
+                comparisonCard.querySelectorAll('.chart-range-btns .range-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                event.target.classList.add('active');
+            }
+
+            renderComparisonChart();
+        }
+
+        function setComparisonMechanic(mechanicId) {
+            selectedComparisonMechanic = mechanicId;
+            renderComparisonChart();
+        }
+
+        function renderComparisonChart() {
+            const container = document.getElementById('comparisonChart');
+            if (!container) return;
+
+            const entries = getEntries();
+            const mechanics = getMechanics();
+            const currentRange = rangeByTab['comparisonChart'] || '3m';
+            const rangeWeeks = getRangeWeeks(currentRange);
+
+            // Filter mechanics based on selection
+            const displayMechanics = selectedComparisonMechanic === 'all' 
+                ? mechanics 
+                : mechanics.filter(m => m.id === selectedComparisonMechanic);
+
+            const weekData = {};
+            const weekEnds = {};
+            entries.filter(e => new Date(e.weekStart) >= rangeWeeks.start && new Date(e.weekStart) <= rangeWeeks.end).forEach(e => {
+                if (!weekData[e.weekStart]) {
+                    weekData[e.weekStart] = {};
+                    weekEnds[e.weekStart] = e.weekEnd;
+                }
+                weekData[e.weekStart][e.mechanicId] = e.efficiency;
+            });
+
+            const weeks = Object.keys(weekData).sort();
+            if (weeks.length === 0) {
+                container.innerHTML = '<div class="no-data" style="padding: 40px;">No data for this period</div>';
+                return;
+            }
+
+            const data = weeks.map(w => {
+                const d = { week: w, label: formatDateShort(new Date(weekEnds[w] + 'T00:00:00')) };
+                displayMechanics.forEach(m => {
+                    d[m.id] = weekData[w][m.id] || null;
+                });
+                return d;
+            });
+
+            const allValues = [];
+            data.forEach(d => {
+                displayMechanics.forEach(m => {
+                    if (d[m.id] !== null) allValues.push(d[m.id]);
+                });
+            });
+
+            const minVal = allValues.length > 0 ? Math.min(...allValues, settings.targetEfficiency) - 10 : 0;
+            const maxVal = allValues.length > 0 ? Math.max(...allValues, settings.targetEfficiency) + 10 : 100;
+
+            const lines = displayMechanics.map(m => ({
+                key: m.id,
+                color: m.color,
+                label: m.name
+            }));
+
+            renderLineChart(container, data, minVal, maxVal, lines);
+        }
+
+        // Helper functions for Reports
+        function getAvailableYears() {
+            const entries = getEntries();
+            const years = [...new Set(entries.map(e => new Date(e.weekStart + 'T00:00:00').getFullYear()))];
+            const currentYear = new Date().getFullYear();
+
+            // Always include current year even if no data
+            if (!years.includes(currentYear)) years.push(currentYear);
+
+            return years.sort((a, b) => b - a);
+        }
+
+        function getAvailableQuarters(year) {
+            const entries = getEntries();
+            const quarters = new Set();
+
+            entries.forEach(e => {
+                const date = new Date(e.weekStart + 'T00:00:00');
+                if (date.getFullYear() === year) {
+                    const quarter = Math.ceil((date.getMonth() + 1) / 3);
+                    quarters.add(quarter);
+                }
+            });
+
+            // If no quarters have data, show current quarter if it's the current year
+            if (quarters.size === 0 && year === new Date().getFullYear()) {
+                quarters.add(Math.ceil((new Date().getMonth() + 1) / 3));
+            }
+
+            return Array.from(quarters).sort((a, b) => a - b);
+        }
+
+        function getQuarterMonths(quarter) {
+            switch(quarter) {
+                case 1: return [0, 1, 2];
+                case 2: return [3, 4, 5];
+                case 3: return [6, 7, 8];
+                case 4: return [9, 10, 11];
+                default: return [0, 1, 2];
+            }
+        }
+
+        function getQuarterMonthNames(quarter) {
+            switch(quarter) {
+                case 1: return 'Jan - Mar';
+                case 2: return 'Apr - Jun';
+                case 3: return 'Jul - Sep';
+                case 4: return 'Oct - Dec';
+                default: return 'Jan - Mar';
+            }
+        }
+
+        function getQuarterName(quarter) {
+            return `Q${quarter}`;
+        }
+
+        function changeReportYear(year) {
+            selectedReportYear = parseInt(year);
+
+            // Make sure selected quarter is available in the new year
+            const availableQuarters = getAvailableQuarters(selectedReportYear);
+            if (availableQuarters.length > 0 && !availableQuarters.includes(selectedReportQuarter)) {
+                // If current quarter not available, select the most recent available quarter
+                selectedReportQuarter = availableQuarters[availableQuarters.length - 1];
+            }
+
+            renderReportsPanel();
+        }
+
+        function changeReportQuarter(quarter) {
+            selectedReportQuarter = parseInt(quarter);
+            renderReportsPanel();
+        }
+
+        function renderQuarterChart() {
+            const container = document.getElementById('quarterChart');
+            if (!container) return;
+
+            const entries = getEntries();
+            const mechanics = getMechanics();
+            const quarterMonths = getQuarterMonths(selectedReportQuarter);
+
+            const quarterEntries = entries.filter(e => {
+                const date = new Date(e.weekStart + 'T00:00:00');
+                return date.getFullYear() === selectedReportYear && 
+                       quarterMonths.includes(date.getMonth());
+            });
+
+            const weekData = {};
+            quarterEntries.forEach(e => {
+                if (!weekData[e.weekStart]) {
+                    weekData[e.weekStart] = {};
+                }
+                weekData[e.weekStart][e.mechanicId] = e.efficiency;
+            });
+
+            const weeks = Object.keys(weekData).sort();
+            if (weeks.length === 0) {
+                container.innerHTML = '<div class="no-data" style="padding: 40px;">No data for this period</div>';
+                return;
+            }
+
+            const data = weeks.map(w => {
+                const d = { week: w, label: formatDateShort(new Date(w + 'T00:00:00')) };
+                mechanics.forEach(m => {
+                    d[m.id] = weekData[w][m.id] || null;
+                });
+                return d;
+            });
+
+            const allValues = [];
+            data.forEach(d => {
+                mechanics.forEach(m => {
+                    if (d[m.id] !== null) allValues.push(d[m.id]);
+                });
+            });
+
+            const minVal = allValues.length > 0 ? Math.min(...allValues, settings.targetEfficiency) - 10 : 0;
+            const maxVal = allValues.length > 0 ? Math.max(...allValues, settings.targetEfficiency) + 10 : 100;
+
+            const lines = mechanics.map(m => ({
+                key: m.id,
+                color: m.color,
+                label: m.name
+            }));
+
+            renderLineChart(container, data, minVal, maxVal, lines);
+        }
+
+        function renderReportsPanel() {
+            const container = document.getElementById('reportsPanel');
+            if (!container) return;
+
+            const entries = getEntries();
+            const mechanics = getMechanics();
+
+            if (entries.length === 0) {
+                container.innerHTML = `
+                    <div class="no-data">
+                        <div class="no-data-icon">📊</div>
+                        <p>No data available. Start logging efficiency entries to see reports.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            // Get available years from data
+            const availableYears = getAvailableYears();
+            if (!availableYears.includes(selectedReportYear)) {
+                selectedReportYear = availableYears[0] || new Date().getFullYear();
+            }
+
+            // Get available quarters for selected year
+            const availableQuarters = getAvailableQuarters(selectedReportYear);
+            if (availableQuarters.length > 0 && !availableQuarters.includes(selectedReportQuarter)) {
+                selectedReportQuarter = availableQuarters[availableQuarters.length - 1];
+            }
+
+            // Calculate ALL-TIME leaderboard (who's been #1 most often)
+            const weeklyLeaders = {};
+            const leaderCount = {};
+            mechanics.forEach(m => leaderCount[m.id] = 0);
+
+            entries.forEach(e => {
+                const week = e.weekStart;
+                if (!weeklyLeaders[week]) {
+                    weeklyLeaders[week] = { id: e.mechanicId, eff: e.efficiency };
+                } else if (e.efficiency > weeklyLeaders[week].eff) {
+                    weeklyLeaders[week] = { id: e.mechanicId, eff: e.efficiency };
+                }
+            });
+
+            Object.values(weeklyLeaders).forEach(leader => {
+                leaderCount[leader.id]++;
+            });
+
+            const leaderboard = mechanics.map(m => ({
+                ...m,
+                weeksAtTop: leaderCount[m.id],
+                personalBest: Math.max(...entries.filter(e => e.mechanicId === m.id).map(e => e.efficiency))
+            })).sort((a, b) => b.weeksAtTop - a.weeksAtTop);
+
+            // Calculate streaks (all-time)
+            const streakData = {};
+            mechanics.forEach(m => {
+                const mechEntries = entries.filter(e => e.mechanicId === m.id)
+                    .sort((a, b) => new Date(a.weekStart) - new Date(b.weekStart));
+
+                let currentStreak = 0;
+                let streakType = null;
+                let longestAbove = 0;
+                let longestBelow = 0;
+
+                mechEntries.forEach(e => {
+                    const status = getStatus(e.efficiency);
+
+                    if (status === 'above') {
+                        if (streakType === 'above') {
+                            currentStreak++;
+                        } else {
+                            currentStreak = 1;
+                            streakType = 'above';
+                        }
+                        longestAbove = Math.max(longestAbove, currentStreak);
+                    } else {
+                        if (streakType === 'below') {
+                            currentStreak++;
+                        } else {
+                            currentStreak = 1;
+                            streakType = 'below';
+                        }
+                        longestBelow = Math.max(longestBelow, currentStreak);
+                    }
+                });
+
+                streakData[m.id] = {
+                    current: currentStreak,
+                    currentType: streakType,
+                    longestAbove,
+                    longestBelow
+                };
+            });
+
+            // Get quarter entries
+            const quarterMonths = getQuarterMonths(selectedReportQuarter);
+            const quarterEntries = entries.filter(e => {
+                const date = new Date(e.weekStart + 'T00:00:00');
+                return date.getFullYear() === selectedReportYear && 
+                       quarterMonths.includes(date.getMonth());
+            }).sort((a, b) => new Date(b.weekStart) - new Date(a.weekStart));
+
+            let html = `
+                <!-- ALL-TIME Leaderboard -->
+                <div class="leaderboard-section">
+                    <div class="leaderboard-title">🏆 All-Time Leaderboard</div>
+                    <table class="leaderboard-table">
+                        <thead>
+                            <tr>
+                                <th>Rank</th>
+                                <th>Mechanic</th>
+                                <th>Weeks at #1</th>
+                                <th>Personal Best</th>
+                                <th>Current Streak</th>
+                                <th>Longest Above Target</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${leaderboard.map((m, idx) => {
+                                const streak = streakData[m.id];
+                                return `
+                                    <tr>
+                                        <td><span class="rank-badge rank-${idx + 1}">#${idx + 1}</span></td>
+                                        <td>
+                                            <div style="display: flex; align-items: center; gap: 8px;">
+                                                <div class="mechanic-avatar" style="background: ${m.color}; width: 24px; height: 24px; font-size: 0.75rem;">${m.name[0]}</div>
+                                                ${m.name}
+                                            </div>
+                                        </td>
+                                        <td style="font-family: var(--font-mono); font-weight: 600;">${m.weeksAtTop} weeks</td>
+                                        <td style="font-family: var(--font-mono); color: var(--status-green); font-weight: 600;">${m.personalBest}%</td>
+                                        <td>
+                                            ${streak.current > 0 ? `
+                                                <span class="streak-indicator ${streak.currentType}">
+                                                    ${streak.currentType === 'above' ? '🔥' : '📉'} ${streak.current} week${streak.current > 1 ? 's' : ''}
+                                                </span>
+                                            ` : '"–'}
+                                        </td>
+                                        <td style="font-family: var(--font-mono);">${streak.longestAbove} weeks</td>
+                                    </tr>
+                                `;
+                            }).join('')}
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Year/Quarter Selector -->
+                <div class="shop-avg-card" style="margin-top: 24px;">
+                    <div style="display: flex; gap: 16px; align-items: center; flex-wrap: wrap;">
+                        <div class="form-group" style="margin-bottom: 0; flex: 1; min-width: 150px;">
+                            <label style="margin-bottom: 4px;">Year</label>
+                            <select onchange="changeReportYear(this.value)" style="width: 100%; padding: 10px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius); color: var(--text-primary); font-size: 1rem;">
+                                ${availableYears.map(y => `<option value="${y}" ${y === selectedReportYear ? 'selected' : ''}>${y}</option>`).join('')}
+                            </select>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 0; flex: 1; min-width: 150px;">
+                            <label style="margin-bottom: 4px;">Quarter</label>
+                            <select onchange="changeReportQuarter(this.value)" style="width: 100%; padding: 10px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius); color: var(--text-primary); font-size: 1rem;">
+                                ${availableQuarters.map(q => `<option value="${q}" ${q === selectedReportQuarter ? 'selected' : ''}>Q${q} (${getQuarterMonthNames(q)})</option>`).join('')}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quarter Trend Chart -->
+                <div class="shop-avg-card" style="margin-top: 24px;">
+                    <div class="chart-section" style="margin-bottom: 0;">
+                        <div class="chart-header">
+                            <div class="chart-title">${getQuarterName(selectedReportQuarter)} ${selectedReportYear} Efficiency Trend</div>
+                        </div>
+                        <div class="chart-container" id="quarterChart"></div>
+                    </div>
+                </div>
+
+                <!-- Quarter Entries Table -->
+                <div class="shop-avg-card" style="margin-top: 24px;">
+                    <div class="leaderboard-title" style="margin-bottom: 16px;">📋 ${getQuarterName(selectedReportQuarter)} ${selectedReportYear} Entries (${quarterEntries.length} total)</div>
+                    ${quarterEntries.length > 0 ? `
+                        <div class="history-scroll-container" style="max-height: 500px;">
+                            <table class="history-table">
+                                <thead>
+                                    <tr>
+                                        <th>Week</th>
+                                        <th>Mechanic</th>
+                                        <th>Hours</th>
+                                        <th>Labor</th>
+                                        <th>$/Hr</th>
+                                        <th>Efficiency</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${quarterEntries.map(e => {
+                                        const mechanic = mechanics.find(m => m.id === e.mechanicId);
+                                        const status = getStatus(e.efficiency);
+                                        const color = status === 'above' ? 'var(--status-green)' : 
+                                                      status === 'at' ? 'var(--status-yellow)' : 'var(--status-red)';
+                                        const weekLabel = formatDateShort(new Date(e.weekEnd + 'T00:00:00'));
+                                        return `
+                                            <tr>
+                                                <td>${weekLabel}</td>
+                                                <td>
+                                                    <div style="display: flex; align-items: center; gap: 8px;">
+                                                        <div class="mechanic-avatar" style="background: ${mechanic ? mechanic.color : '#666'}; width: 24px; height: 24px; font-size: 0.75rem;">${mechanic ? mechanic.name[0] : '?'}</div>
+                                                        ${mechanic ? mechanic.name : 'Unknown'}
+                                                    </div>
+                                                </td>
+                                                <td>${e.hoursWorked}</td>
+                                                <td>$${e.laborGenerated.toLocaleString()}</td>
+                                                <td>$${e.hourlyRate}</td>
+                                                <td style="color: ${color}; font-weight: 600;">${e.efficiency}%</td>
+                                            </tr>
+                                        `;
+                                    }).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    ` : `
+                        <div class="no-data" style="padding: 40px;">
+                            <p>No entries for ${getQuarterName(selectedReportQuarter)} ${selectedReportYear}</p>
+                        </div>
+                    `}
+                </div>
+            `;
+
+            container.innerHTML = html;
+
+            // Render the quarter chart
+            requestAnimationFrame(() => {
+                renderQuarterChart();
+            });
+        }
+
+        function renderMechanicPanel(mechanicId) {
+            const container = document.getElementById(`${mechanicId}Panel`);
+            if (!container) return;
+
+            const entries = getEntries();
+            const mechanics = getMechanics();
+            const mechanic = mechanics.find(m => m.id === mechanicId);
+            if (!mechanic) return;
+
+            const currentRange = rangeByTab[mechanicId] || '3m';
+
+            if (!selectedWeeks[mechanicId]) {
+                selectedWeeks[mechanicId] = formatDate(getWeekStart(new Date()));
+            }
+
+            const selectedWeekStart = new Date(selectedWeeks[mechanicId] + 'T00:00:00');
+            const selectedWeekEnd = getWeekEnd(selectedWeekStart);
+
+            let html = `
+                <div class="mechanic-layout">
+                    <div class="entry-panel">
+                        <div class="panel-header">
+                            <div class="mechanic-avatar" style="background: ${mechanic.color}">${mechanic.name[0]}</div>
+                            <div>
+                                <div class="panel-title">${mechanic.name}</div>
+                                <div class="panel-subtitle">Log weekly efficiency</div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Work Week (Wed-Tue)</label>
+                            <div class="calendar-picker">
+                                <div class="calendar-input" onclick="toggleCalendar('${mechanicId}')">
+                                    <span id="week-input-${mechanicId}">Week ending ${formatDateFull(selectedWeekEnd)}</span>
+                                    <span>📅</span>
+                                </div>
+                                <div class="calendar-dropdown" id="calendar-dropdown-${mechanicId}">
+                                    <div class="calendar-header">
+                                        <button class="calendar-nav" onclick="event.stopPropagation(); navigateCalendar('${mechanicId}', -1)">&lt;</button>
+                                        <span class="calendar-month-year" id="calendar-month-year-${mechanicId}"></span>
+                                        <button class="calendar-nav" onclick="event.stopPropagation(); navigateCalendar('${mechanicId}', 1)">&gt;</button>
+                                    </div>
+                                    <div class="calendar-weekdays">
+                                        <div class="calendar-weekday">Sun</div>
+                                        <div class="calendar-weekday">Mon</div>
+                                        <div class="calendar-weekday">Tue</div>
+                                        <div class="calendar-weekday work-day">Wed</div>
+                                        <div class="calendar-weekday work-day">Thu</div>
+                                        <div class="calendar-weekday work-day">Fri</div>
+                                        <div class="calendar-weekday work-day">Sat</div>
+                                    </div>
+                                    <div class="calendar-days" id="calendar-days-${mechanicId}"></div>
+                                </div>
+                            </div>
+                            <div class="week-display" id="weekDisplay-${mechanicId}">Week ending: ${formatDate(selectedWeekEnd)}</div>
+                        </div>
+
+                        <div class="input-row">
+                            <div class="form-group">
+                                <label>Hours Worked</label>
+                                <input type="number" id="hours-${mechanicId}" min="0" max="100" step="0.5" placeholder="40" oninput="updateResult('${mechanicId}')">
+                            </div>
+                            <div class="form-group">
+                                <label>Labor Generated ($)</label>
+                                <input type="number" id="labor-${mechanicId}" min="0" step="1" placeholder="3000" oninput="updateResult('${mechanicId}')">
+                            </div>
+                        </div>
+
+                        <div class="result-display status-none" id="result-${mechanicId}">
+                            <div class="efficiency-value" id="effValue-${mechanicId}">&ndash;%</div>
+                            <div class="status-label" id="statusLabel-${mechanicId}">Enter data to calculate</div>
+                            <div class="hourly-rate" id="hourlyRate-${mechanicId}"></div>
+                        </div>
+
+                        <button class="save-btn" style="background: ${mechanic.color}; color: white;" id="saveBtn-${mechanicId}" disabled onclick="handleSave('${mechanicId}')">
+                            Save Entry
+                        </button>
+
+                        <div class="danger-zone">
+                            <div class="danger-zone-title">Danger Zone</div>
+                            <button class="btn btn-danger" style="width: 100%;" onclick="openDeleteConfirm('${mechanicId}')">
+                                Delete ${mechanic.name}
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="data-panel" id="dataPanel-${mechanicId}">
+            `;
+
+            const mechEntries = entries.filter(e => e.mechanicId === mechanicId)
+                .sort((a, b) => new Date(b.weekStart) - new Date(a.weekStart));
+
+            if (mechEntries.length === 0) {
+                html += `
+                    <div class="no-data">
+                        <div class="no-data-icon">📊</div>
+                        <p>No entries yet. Log your first week's data to see trends.</p>
+                    </div>
+                `;
+            } else {
+                const latest = mechEntries[0];
+                const rangeWeeks = getRangeWeeks(currentRange);
+                const rangeEntries = mechEntries.filter(e => new Date(e.weekStart) >= rangeWeeks.start);
+
+                const avgEfficiency = rangeEntries.length > 0
+                    ? Math.round(rangeEntries.reduce((sum, e) => sum + e.efficiency, 0) / rangeEntries.length * 10) / 10
+                    : 0;
+
+                const totalHours = rangeEntries.reduce((sum, e) => sum + e.hoursWorked, 0);
+                const totalLabor = rangeEntries.reduce((sum, e) => sum + e.laborGenerated, 0);
+
+                const latestStatus = getStatus(latest.efficiency);
+                const avgStatus = getStatus(avgEfficiency);
+
+                html += `
+                    <div class="stats-row">
+                        <div class="stat-card">
+                            <div class="stat-label">Latest Efficiency</div>
+                            <div class="stat-value ${getStatusColor(latestStatus)}">${latest.efficiency}%</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Avg (${currentRange.toUpperCase()})</div>
+                            <div class="stat-value ${getStatusColor(avgStatus)}">${avgEfficiency}%</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Total Hours (${currentRange.toUpperCase()})</div>
+                            <div class="stat-value">${Math.round(totalHours * 10) / 10}</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Labor (${currentRange.toUpperCase()})</div>
+                            <div class="stat-value">$${Math.round(totalLabor).toLocaleString()}</div>
+                        </div>
+                    </div>
+
+                    <div class="chart-section">
+                        <div class="chart-header">
+                            <div class="chart-title">Efficiency Trend</div>
+                            <div class="chart-range-btns">
+                                <button class="range-btn ${currentRange === '1m' ? 'active' : ''}" onclick="setRange('${mechanicId}', '1m')">1M</button>
+                                <button class="range-btn ${currentRange === '3m' ? 'active' : ''}" onclick="setRange('${mechanicId}', '3m')">3M</button>
+                                <button class="range-btn ${currentRange === '6m' ? 'active' : ''}" onclick="setRange('${mechanicId}', '6m')">6M</button>
+                            </div>
+                        </div>
+                        <div class="chart-container" id="chart-${mechanicId}"></div>
+                    </div>
+                `;
+
+                const insights = calculateInsights(entries, mechanicId, currentRange);
+                if (insights.length > 0) {
+                    html += `
+                        <div class="insights-section">
+                            <div class="insights-title">Performance Observations</div>
+                            <div class="insights-scroll-container">
+                                ${insights.map(i => `
+                                    <div class="insight-item ${i.type}">
+                                        <span class="insight-week">${i.week}</span>
+                                        <span class="insight-text">${i.text}</span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                }
+
+                html += `
+                    <div class="history-section">
+                        <div class="insights-title">Entry History</div>
+                        <div class="history-scroll-container">
+                            <table class="history-table">
+                                <thead>
+                                    <tr>
+                                        <th>Week</th>
+                                        <th>Hours</th>
+                                        <th>Labor</th>
+                                        <th>$/Hr</th>
+                                        <th>Efficiency</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${mechEntries.map(e => {
+                                        const status = getStatus(e.efficiency);
+                                        const color = status === 'above' ? 'var(--status-green)' : 
+                                                      status === 'at' ? 'var(--status-yellow)' : 'var(--status-red)';
+                                        const weekLabel = formatDateShort(new Date(e.weekEnd + 'T00:00:00'));
+                                        return `
+                                            <tr>
+                                                <td>${weekLabel}</td>
+                                                <td>${e.hoursWorked}</td>
+                                                <td>$${e.laborGenerated.toLocaleString()}</td>
+                                                <td>$${e.hourlyRate}</td>
+                                                <td style="color: ${color}">${e.efficiency}%</td>
+                                                <td>
+                                                    <button class="entry-edit-btn" onclick="openEditEntry('${e.id}')">Edit</button>
+                                                    <button class="entry-delete-btn" onclick="openDeleteEntry('${e.id}', '${weekLabel}')">Delete</button>
+                                                </td>
+                                            </tr>
+                                        `;
+                                    }).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                `;
+            }
+
+            html += `
+                    </div>
+                </div>
+            `;
+
+            container.innerHTML = html;
+
+            if (mechEntries.length > 0) {
+                requestAnimationFrame(() => {
+                    renderMechanicChart(mechanicId);
+                });
+            }
+        }
+
+        function updateWeekDisplay(mechanicId) {
+            const display = document.getElementById(`weekDisplay-${mechanicId}`);
+            if (display && selectedWeeks[mechanicId]) {
+                const start = new Date(selectedWeeks[mechanicId] + 'T00:00:00');
+                const end = getWeekEnd(start);
+                display.textContent = `Week ending: ${formatDate(end)}`;
+            }
+        }
+
+        function updateResult(mechanicId) {
+            const hours = parseFloat(document.getElementById(`hours-${mechanicId}`).value) || 0;
+            const labor = parseFloat(document.getElementById(`labor-${mechanicId}`).value) || 0;
+
+            const resultDiv = document.getElementById(`result-${mechanicId}`);
+            const efficiencyEl = document.getElementById(`effValue-${mechanicId}`);
+            const statusEl = document.getElementById(`statusLabel-${mechanicId}`);
+            const hourlyEl = document.getElementById(`hourlyRate-${mechanicId}`);
+            const saveBtn = document.getElementById(`saveBtn-${mechanicId}`);
+
+            if (hours > 0 && labor > 0) {
+                const result = calculateEfficiency(hours, labor);
+                const status = getStatus(result.efficiency);
+
+                resultDiv.className = `result-display status-${status}`;
+                efficiencyEl.textContent = `${result.efficiency}%`;
+                statusEl.textContent = getStatusLabel(status);
+                hourlyEl.textContent = `$${result.hourlyRate}/hr effective rate`;
+                saveBtn.disabled = false;
+            } else {
+                resultDiv.className = 'result-display status-none';
+                efficiencyEl.textContent = '&ndash;%';
+                statusEl.textContent = 'Enter data to calculate';
+                hourlyEl.textContent = '';
+                saveBtn.disabled = true;
+            }
+        }
+
+        function getRangeWeeks(range) {
+            const now = new Date();
+
+            if (range === 'cq') {
+                // Current quarter
+                const currentMonth = now.getMonth();
+                const quarterStart = Math.floor(currentMonth / 3) * 3;
+                const start = new Date(now.getFullYear(), quarterStart, 1);
+                return { start, end: now };
+            } else if (range === 'pq') {
+                // Previous quarter
+                const currentMonth = now.getMonth();
+                const currentQuarterStart = Math.floor(currentMonth / 3) * 3;
+                const prevQuarterStart = currentQuarterStart - 3;
+
+                let year = now.getFullYear();
+                let startMonth = prevQuarterStart;
+
+                if (prevQuarterStart < 0) {
+                    year--;
+                    startMonth = 9; // Q4 of previous year
+                }
+
+                const start = new Date(year, startMonth, 1);
+                const end = new Date(now.getFullYear(), currentQuarterStart, 0); // Last day of previous quarter
+                return { start, end };
+            } else {
+                // Standard month ranges
+                const months = range === '1m' ? 1 : range === '3m' ? 3 : 6;
+                const start = new Date(now);
+                start.setMonth(start.getMonth() - months);
+                return { start, end: now };
+            }
+        }
+
+        function setRange(mechanicId, range) {
+            rangeByTab[mechanicId] = range;
+
+            // Update button visual states immediately
+            const panel = document.querySelector(`[data-panel="${mechanicId}"]`);
+            if (panel) {
+                panel.querySelectorAll('.chart-range-btns .range-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                event.target.classList.add('active');
+            }
+
+            renderMechanicPanel(mechanicId);
+        }
+
+        function setOverviewRange(range) {
+            rangeByTab['overview'] = range;
+
+            // Update button visual states immediately
+            document.querySelectorAll('#overviewPanel .chart-range-btns .range-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            renderOverviewPanel();
+        }
+
+        function calculateInsights(entries, mechanicId, range) {
+            const insights = [];
+            const rangeWeeks = getRangeWeeks(range);
+
+            const weeklyData = {};
+            entries.filter(e => new Date(e.weekStart) >= rangeWeeks.start).forEach(e => {
+                if (!weeklyData[e.weekStart]) {
+                    weeklyData[e.weekStart] = [];
+                }
+                weeklyData[e.weekStart].push(e);
+            });
+
+            Object.keys(weeklyData).sort().forEach(week => {
+                const weekEntries = weeklyData[week];
+                const mechEntry = weekEntries.find(e => e.mechanicId === mechanicId);
+                if (!mechEntry || weekEntries.length < 2) return;
+
+                const shopAvg = weekEntries.reduce((sum, e) => sum + e.efficiency, 0) / weekEntries.length;
+                const diff = mechEntry.efficiency - shopAvg;
+
+                const weekLabel = formatDateShort(new Date(week + 'T00:00:00'));
+
+                if (diff > 10) {
+                    insights.push({
+                        week: weekLabel,
+                        text: `${Math.round(diff)}% above shop average`,
+                        type: 'above'
+                    });
+                } else if (diff < -10) {
+                    insights.push({
+                        week: weekLabel,
+                        text: `${Math.round(Math.abs(diff))}% below shop average`,
+                        type: 'below'
+                    });
+                }
+            });
+
+            const mechEntries = entries.filter(e => e.mechanicId === mechanicId && new Date(e.weekStart) >= rangeWeeks.start)
+                .sort((a, b) => new Date(a.weekStart) - new Date(b.weekStart));
+
+            if (mechEntries.length >= 4) {
+                const last4 = mechEntries.slice(-4);
+                const avg = last4.reduce((sum, e) => sum + e.efficiency, 0) / 4;
+                const variance = last4.reduce((sum, e) => sum + Math.pow(e.efficiency - avg, 2), 0) / 4;
+
+                if (variance < 25) {
+                    insights.push({
+                        week: 'Recent',
+                        text: `Consistent performance over last 4 weeks (avg: ${Math.round(avg)}%)`,
+                        type: 'consistent'
+                    });
+                }
+            }
+
+            return insights;
+        }
+
+        function renderShopAvgChart() {
+            const container = document.getElementById('shopAvgChart');
+            if (!container) return;
+
+            const entries = getEntries();
+            const currentRange = rangeByTab['overview'] || '3m';
+
+            const allEntriesSorted = [...entries].sort((a, b) => new Date(b.weekStart) - new Date(a.weekStart));
+            const lastEntryDate = allEntriesSorted.length > 0 ? new Date(allEntriesSorted[0].weekStart) : new Date();
+
+            let rangeStart, rangeEnd;
+
+            if (currentRange === 'cq' || currentRange === 'pq') {
+                // Use getRangeWeeks for quarter ranges
+                const range = getRangeWeeks(currentRange);
+                rangeStart = range.start;
+                rangeEnd = range.end;
+            } else {
+                // Calculate range based on last entry date for month ranges
+                const months = currentRange === '1m' ? 1 : currentRange === '3m' ? 3 : 6;
+                rangeStart = new Date(lastEntryDate);
+                rangeStart.setMonth(rangeStart.getMonth() - months);
+                rangeEnd = lastEntryDate;
+            }
+
+            const allWeeks = [];
+            let weekStart = getWeekStart(rangeStart);
+            const endWeek = getWeekStart(rangeEnd);
+
+            while (weekStart <= endWeek) {
+                allWeeks.push(formatDate(weekStart));
+                weekStart = new Date(weekStart);
+                weekStart.setDate(weekStart.getDate() + 7);
+            }
+
+            const weekData = {};
+            entries.forEach(e => {
+                if (!weekData[e.weekStart]) {
+                    weekData[e.weekStart] = [];
+                }
+                weekData[e.weekStart].push(e.efficiency);
+            });
+
+            const data = allWeeks.map(w => {
+                const weekDate = new Date(w + 'T00:00:00');
+                return {
+                    week: w,
+                    weekDate: weekDate,
+                    label: `W${getWeekOfMonth(weekDate)}`,
+                    month: getMonthName(weekDate),
+                    shopAvg: weekData[w] ? Math.round(weekData[w].reduce((a, b) => a + b, 0) / weekData[w].length * 10) / 10 : null
+                };
+            });
+
+            if (data.length === 0) {
+                container.innerHTML = '<div class="no-data" style="padding: 40px;">No data for this period</div>';
+                return;
+            }
+
+            renderShopAvgChartWithWeeks(container, data);
+        }
+
+        function getWeekOfMonth(date) {
+            const firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
+            const weekNum = Math.ceil((date.getDate() + (firstDay.getDay() + 6) % 7) / 7);
+            return weekNum;
+        }
+
+        function renderShopAvgChartWithWeeks(container, data) {
+            const width = container.clientWidth - 20;
+            const height = container.clientHeight - 20;
+
+            if (width <= 0 || height <= 0) {
+                setTimeout(() => renderShopAvgChartWithWeeks(container, data), 50);
+                return;
+            }
+
+            // Responsive padding based on screen width
+            const isMobile = width < 500;
+            const isTablet = width >= 500 && width < 768;
+            const padding = isMobile 
+                ? { top: 20, right: 50, bottom: 45, left: 35 }
+                : isTablet
+                ? { top: 25, right: 65, bottom: 50, left: 40 }
+                : { top: 30, right: 80, bottom: 60, left: 50 };
+            const chartWidth = width - padding.left - padding.right;
+            const chartHeight = height - padding.top - padding.bottom;
+
+            const xScale = (i) => padding.left + (i / (data.length - 1 || 1)) * chartWidth;
+            const yScale = (v) => padding.top + chartHeight - (v / 100) * chartHeight;
+
+            let svg = `<svg class="chart-svg" viewBox="0 0 ${width} ${height}" preserveAspectRatio="xMidYMid meet">`;
+
+            for (let pct = 0; pct <= 100; pct += 10) {
+                const y = yScale(pct);
+                svg += `<line x1="${padding.left}" y1="${y}" x2="${width - padding.right}" y2="${y}" stroke="var(--border-color)" stroke-opacity="0.4"/>`;
+                svg += `<text x="${padding.left - 8}" y="${y + 4}" fill="var(--text-muted)" font-size="10" text-anchor="end">${pct}%</text>`;
+            }
+
+            const targetY = yScale(settings.targetEfficiency);
+            svg += `<line x1="${padding.left}" y1="${targetY}" x2="${width - padding.right}" y2="${targetY}" stroke="var(--status-green)" stroke-opacity="0.8" stroke-width="2" stroke-dasharray="6,4"/>`;
+            svg += `<text x="${width - padding.right + 5}" y="${targetY + 4}" fill="var(--status-green)" font-size="9" font-weight="600">Target ${settings.targetEfficiency}%</text>`;
+
+            let lastMonth = '';
+            const monthBoundaries = [];
+
+            data.forEach((d, i) => {
+                if (d.month !== lastMonth) {
+                    monthBoundaries.push({ index: i, month: d.month });
+                    lastMonth = d.month;
+                }
+            });
+
+            monthBoundaries.forEach((mb, idx) => {
+                const x = xScale(mb.index);
+                if (mb.index > 0) {
+                    svg += `<line x1="${x}" y1="${padding.top}" x2="${x}" y2="${height - padding.bottom + 10}" stroke="var(--border-color)" stroke-opacity="0.6" stroke-dasharray="3,3"/>`;
+                }
+
+                const nextBoundary = monthBoundaries[idx + 1];
+                const endIndex = nextBoundary ? nextBoundary.index : data.length;
+                const midX = (xScale(mb.index) + xScale(endIndex - 1)) / 2;
+                svg += `<text x="${midX}" y="${height - 8}" fill="var(--text-primary)" font-size="13" font-weight="600" text-anchor="middle">${mb.month}</text>`;
+            });
+
+            const maxLabels = Math.min(data.length, 16);
+            const labelStep = Math.max(1, Math.ceil(data.length / maxLabels));
+
+            data.forEach((d, i) => {
+                if (i % labelStep === 0 || i === data.length - 1) {
+                    svg += `<text x="${xScale(i)}" y="${height - padding.bottom + 20}" fill="var(--text-muted)" font-size="11" text-anchor="middle">${d.label}</text>`;
+                }
+            });
+
+            const validPoints = data.map((d, i) => d.shopAvg !== null ? { x: xScale(i), y: yScale(d.shopAvg), val: d.shopAvg, label: d.label } : null).filter(p => p !== null);
+
+            if (validPoints.length > 1) {
+                const pathPoints = validPoints.map(p => `${p.x},${p.y}`).join(' ');
+                svg += `<polyline points="${pathPoints}" fill="none" stroke="var(--accent-blue)" stroke-width="2.5"/>`;
+            }
+
+            validPoints.forEach(p => {
+                svg += `<circle class="chart-point" cx="${p.x}" cy="${p.y}" r="4" fill="var(--accent-blue)" stroke="var(--bg-card)" stroke-width="2" data-value="${p.val}" data-label="${p.label}" style="cursor: pointer;"/>`;
+            });
+
+            svg += `<rect x="${width - padding.right + 10}" y="${padding.top + 30}" width="18" height="5" fill="var(--accent-blue)" rx="1"/>`;
+            svg += `<text x="${width - padding.right + 34}" y="${padding.top + 35}" fill="var(--text-secondary)" font-size="15" font-weight="500">Shop Avg</text>`;
+
+            svg += '</svg>';
+            container.innerHTML = svg;
+
+            addChartTooltips(container);
+        }
+
+        function renderMechanicChart(mechanicId) {
+            const container = document.getElementById(`chart-${mechanicId}`);
+            if (!container) return;
+
+            const entries = getEntries();
+            const mechanics = getMechanics();
+            const mechanic = mechanics.find(m => m.id === mechanicId);
+            const range = getRangeWeeks(rangeByTab[mechanicId] || '3m');
+
+            const weekData = {};
+            entries.filter(e => new Date(e.weekStart) >= range.start).forEach(e => {
+                if (!weekData[e.weekStart]) {
+                    weekData[e.weekStart] = { mechanic: null, all: [], weekEnd: e.weekEnd };
+                }
+                weekData[e.weekStart].all.push(e.efficiency);
+                if (e.mechanicId === mechanicId) {
+                    weekData[e.weekStart].mechanic = e.efficiency;
+                }
+            });
+
+            const weeks = Object.keys(weekData).sort();
+            if (weeks.length === 0) {
+                container.innerHTML = '<div class="no-data" style="padding: 40px;">No data for this period</div>';
+                return;
+            }
+
+            const data = weeks.map(w => ({
+                week: w,
+                label: formatDateShort(new Date(weekData[w].weekEnd + 'T00:00:00')),
+                mechanic: weekData[w].mechanic,
+                shopAvg: weekData[w].all.length > 1 ? weekData[w].all.reduce((a, b) => a + b, 0) / weekData[w].all.length : null
+            }));
+
+            const allValues = data.flatMap(d => [d.mechanic, d.shopAvg].filter(v => v !== null));
+            const minVal = Math.min(...allValues, settings.targetEfficiency) - 10;
+            const maxVal = Math.max(...allValues, settings.targetEfficiency) + 10;
+
+            const lines = [
+                { key: 'mechanic', color: mechanic ? mechanic.color : 'var(--accent-blue)', label: mechanic ? mechanic.name : 'Mechanic' }
+            ];
+
+            if (data.some(d => d.shopAvg !== null)) {
+                lines.push({ key: 'shopAvg', color: 'var(--text-muted)', label: 'Shop Avg', dashed: true });
+            }
+
+            renderLineChart(container, data, minVal, maxVal, lines);
+        }
+
+        function renderLineChart(container, data, minVal, maxVal, lines) {
+            const width = container.clientWidth - 20;
+            const height = container.clientHeight - 20;
+
+            if (width <= 0 || height <= 0) {
+                setTimeout(() => renderLineChart(container, data, minVal, maxVal, lines), 50);
+                return;
+            }
+
+            // Responsive padding based on screen width
+            const isMobile = width < 500;
+            const isTablet = width >= 500 && width < 768;
+            const padding = isMobile 
+                ? { top: 15, right: 60, bottom: 35, left: 35 }
+                : isTablet
+                ? { top: 18, right: 80, bottom: 38, left: 40 }
+                : { top: 20, right: 100, bottom: 40, left: 50 };
+            const chartWidth = width - padding.left - padding.right;
+            const chartHeight = height - padding.top - padding.bottom;
+
+            const xScale = (i) => padding.left + (i / (data.length - 1 || 1)) * chartWidth;
+            const yScale = (v) => padding.top + chartHeight - ((v - minVal) / (maxVal - minVal)) * chartHeight;
+
+            let svg = `<svg class="chart-svg" viewBox="0 0 ${width} ${height}" preserveAspectRatio="xMidYMid meet">`;
+
+            const gridLines = 5;
+            for (let i = 0; i <= gridLines; i++) {
+                const y = padding.top + (i / gridLines) * chartHeight;
+                const value = Math.round(maxVal - (i / gridLines) * (maxVal - minVal));
+                svg += `<line x1="${padding.left}" y1="${y}" x2="${width - padding.right}" y2="${y}" stroke="var(--border-color)" stroke-opacity="0.5"/>`;
+                svg += `<text x="${padding.left - 10}" y="${y + 4}" fill="var(--text-muted)" font-size="12" text-anchor="end">${value}%</text>`;
+            }
+
+            const targetY = yScale(settings.targetEfficiency);
+            svg += `<line x1="${padding.left}" y1="${targetY}" x2="${width - padding.right}" y2="${targetY}" stroke="var(--status-green)" stroke-opacity="0.5" stroke-dasharray="4,4"/>`;
+            svg += `<text x="${width - padding.right + 5}" y="${targetY + 4}" fill="var(--status-green)" font-size="11" font-weight="600">Target</text>`;
+
+            const maxLabels = Math.min(data.length, 12);
+            const labelStep = Math.max(1, Math.ceil(data.length / maxLabels));
+
+            data.forEach((d, i) => {
+                if (i % labelStep === 0 || i === data.length - 1) {
+                    svg += `<text x="${xScale(i)}" y="${height - 10}" fill="var(--text-muted)" font-size="11" text-anchor="middle">${d.label}</text>`;
+                }
+            });
+
+            lines.forEach((line) => {
+                const points = data.map((d, i) => {
+                    const val = d[line.key];
+                    return val !== null && val !== undefined ? `${xScale(i)},${yScale(val)}` : null;
+                }).filter(p => p !== null);
+
+                if (points.length > 1) {
+                    svg += `<polyline points="${points.join(' ')}" fill="none" stroke="${line.color}" stroke-width="2" ${line.dashed ? 'stroke-dasharray="5,5"' : ''}/>`;
+                }
+
+                data.forEach((d, i) => {
+                    const val = d[line.key];
+                    if (val !== null && val !== undefined) {
+                        svg += `<circle class="chart-point" cx="${xScale(i)}" cy="${yScale(val)}" r="4" fill="${line.color}" stroke="var(--bg-card)" stroke-width="2" data-value="${val}" data-label="${d.label}" data-name="${line.label}" style="cursor: pointer;"/>`;
+                    }
+                });
+            });
+
+            lines.forEach((line, i) => {
+                const y = padding.top + 10 + i * 22;
+                svg += `<rect x="${width - padding.right + 10}" y="${y}" width="18" height="5" fill="${line.color}" rx="1"/>`;
+                svg += `<text x="${width - padding.right + 34}" y="${y + 5}" fill="var(--text-secondary)" font-size="15" font-weight="500">${line.label}</text>`;
+            });
+
+            svg += '</svg>';
+            container.innerHTML = svg;
+
+            addChartTooltips(container);
+        }
+
+        function addChartTooltips(container) {
+            let tooltip = container.querySelector('.chart-tooltip');
+            if (!tooltip) {
+                tooltip = document.createElement('div');
+                tooltip.className = 'chart-tooltip';
+                container.appendChild(tooltip);
+            }
+
+            const points = container.querySelectorAll('.chart-point');
+            points.forEach(point => {
+                point.addEventListener('mouseenter', (e) => {
+                    const value = e.target.getAttribute('data-value');
+                    const label = e.target.getAttribute('data-label');
+                    const name = e.target.getAttribute('data-name');
+
+                    let tooltipHTML = `<div class="tooltip-label">${label}</div>`;
+                    if (name) {
+                        tooltipHTML += `<div style="font-size: 0.7rem; color: var(--text-muted); margin-bottom: 2px;">${name}</div>`;
+                    }
+                    tooltipHTML += `<div class="tooltip-value">${value}% Efficiency</div>`;
+
+                    tooltip.innerHTML = tooltipHTML;
+                    tooltip.classList.add('visible');
+                });
+
+                point.addEventListener('mousemove', (e) => {
+                    const rect = container.getBoundingClientRect();
+                    const x = e.clientX - rect.left + 10;
+                    const y = e.clientY - rect.top - 10;
+
+                    tooltip.style.left = x + 'px';
+                    tooltip.style.top = y + 'px';
+                });
+
+                point.addEventListener('mouseleave', () => {
+                    tooltip.classList.remove('visible');
+                });
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Fetch data from server first
+            const serverData = await fetchFromServer();
+            if (serverData) {
+                console.log('✅ Loaded data from server');
+            } else {
+                console.log('⚠️ Using local storage data (offline mode)');
+            }
+
+            loadSettings();
+            initTabs();
+            renderAll();
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.calendar-picker')) {
+                document.querySelectorAll('.calendar-dropdown').forEach(d => d.classList.remove('open'));
+            }
+        });
+
+        ['settingsModal', 'addMechanicModal', 'deleteConfirmModal', 'deleteEntryModal', 'saveEntryModal', 'importModal', 'editEntryModal'].forEach(id => {
+            const modal = document.getElementById(id);
+            if (modal) {
+                modal.addEventListener('click', (e) => {
+                    if (e.target.id === id) {
+                        e.target.classList.remove('visible');
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
